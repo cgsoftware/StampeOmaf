@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DDT" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="13"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="192"/>
 	<style name="Righe" mode="Opaque">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
@@ -1138,6 +1138,43 @@ di obblighi di legge. Salvo comunicazione contraria si presume il consenso]]></t
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "scadq.jasper"]]></subreportExpression>
 			</subreport>
+			<staticText>
+				<reportElement x="213" y="33" width="45" height="8" printWhenGroupChanges="FAT"/>
+				<textElement>
+					<font size="6" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TOTALI IVA]]></text>
+			</staticText>
+			<subreport runToBottom="false">
+				<reportElement x="269" y="73" width="210" height="40"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="name">
+					<subreportParameterExpression><![CDATA[$P{name}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="danr">
+					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="adata">
+					<subreportParameterExpression><![CDATA[$P{adata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dadata">
+					<subreportParameterExpression><![CDATA[$P{dadata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anr">
+					<subreportParameterExpression><![CDATA[$P{anr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "conai.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="212" y="73" width="54" height="8" printWhenGroupChanges="FAT"/>
+				<textElement>
+					<font size="6" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TOTALI CONAI]]></text>
+			</staticText>
 		</band>
 	</pageFooter>
 	<summary>
