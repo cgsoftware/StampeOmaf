@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="conai" pageWidth="200" pageHeight="30" orientation="Landscape" columnWidth="200" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="182"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="name" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="danr" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="scad_1" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["./"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="anr" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="adata" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dadata" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     conai_castelletto."imballo" AS conai_castelletto_imballo,
+     conai_castelletto."totale_conai" AS conai_castelletto_totale_conai,
+     conai_castelletto."name" AS conai_castelletto_name,
+     conai_castelletto."peso" AS conai_castelletto_peso,
+     conai_castelletto."codice_iva" AS conai_castelletto_codice_iva,
+     conai_cod."name" AS conai_cod_name,
+     conai_cod."descrizione" AS conai_cod_descrizione,
+     conai_cod."valore" AS conai_cod_valore,
+     fiscaldoc_header."name" AS fiscaldoc_header_name,
+     fiscaldoc_header."numdoc" AS fiscaldoc_header_numdoc
+FROM
+     "public"."conai_cod" conai_cod RIGHT OUTER JOIN "public"."conai_castelletto" conai_castelletto ON conai_cod."id" = conai_castelletto."imballo"
+     INNER JOIN "public"."fiscaldoc_header" fiscaldoc_header ON conai_castelletto."name" = fiscaldoc_header."id"
+WHERE
+     fiscaldoc_header."name" = $P{name}
+ORDER BY
+     fiscaldoc_header_numdoc ASC]]>
+	</queryString>
+	<field name="conai_castelletto_imballo" class="java.lang.Integer"/>
+	<field name="conai_castelletto_totale_conai" class="java.math.BigDecimal"/>
+	<field name="conai_castelletto_name" class="java.lang.Integer"/>
+	<field name="conai_castelletto_peso" class="java.math.BigDecimal"/>
+	<field name="conai_castelletto_codice_iva" class="java.lang.Integer"/>
+	<field name="conai_cod_name" class="java.lang.String"/>
+	<field name="conai_cod_descrizione" class="java.lang.String"/>
+	<field name="conai_cod_valore" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_header_name" class="java.lang.String"/>
+	<field name="fiscaldoc_header_numdoc" class="java.lang.Integer"/>
+	<group name="RR" isStartNewPage="true">
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="8" splitType="Stretch">
+			<staticText>
+				<reportElement x="139" y="0" width="50" height="8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Totale CONAI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="54" height="8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Descrizione]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="26" height="8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Peso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="54" y="0" width="46" height="8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Valore]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="9" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="54" height="9"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{conai_cod_descrizione}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00000" isBlankWhenNull="true">
+				<reportElement x="100" y="0" width="39" height="9"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{conai_castelletto_peso}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00000" isBlankWhenNull="true">
+				<reportElement x="139" y="0" width="50" height="9"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{conai_castelletto_totale_conai}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00000" isBlankWhenNull="true">
+				<reportElement x="54" y="0" width="46" height="9"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{conai_cod_valore}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -79,18 +79,18 @@ ORDER BY
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="10" splitType="Stretch">
+		<band height="8" splitType="Stretch">
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="10" y="0" width="70" height="10" isPrintInFirstWholeBand="true"/>
+				<reportElement x="10" y="0" width="70" height="8" isPrintInFirstWholeBand="true"/>
 				<textElement>
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{fiscaldoc_scadenze_data_scadenza}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="80" y="0" width="50" height="10" isPrintInFirstWholeBand="true"/>
+				<reportElement x="80" y="0" width="50" height="8" isPrintInFirstWholeBand="true"/>
 				<textElement textAlignment="Right">
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_scadenze_importo_scadenza}]]></textFieldExpression>
 			</textField>

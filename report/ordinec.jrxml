@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Ordine" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="122"/>
-	<property name="ireport.y" value="288"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="263"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -104,7 +104,9 @@
      marchio_marchio."name" AS marchio_marchio_name,
      product_product."marchio_ids" AS product_product_marchio_ids,
      sale_agent."name" AS sale_agent_name,
-     product_product."variants" AS product_product_variants
+     product_product."variants" AS product_product_variants,
+     sale_order_line."prezzo_conai" AS sale_order_line_prezzo_conai,
+     sale_order_line."peso_conai" AS sale_order_line_peso_conai
 FROM
      "public"."sale_order" sale_order INNER JOIN "public"."sale_order_line" sale_order_line ON sale_order."id" = sale_order_line."order_id"
      INNER JOIN "public"."res_partner" res_partner ON sale_order."partner_id" = res_partner."id"
@@ -179,8 +181,13 @@ WHERE
 	<field name="product_product_marchio_ids" class="java.lang.Integer"/>
 	<field name="sale_agent_name" class="java.lang.String"/>
 	<field name="product_product_variants" class="java.lang.String"/>
+	<field name="sale_order_line_prezzo_conai" class="java.math.BigDecimal"/>
+	<field name="sale_order_line_peso_conai" class="java.math.BigDecimal"/>
 	<sortField name="sale_order_name"/>
 	<sortField name="sale_order_date_order"/>
+	<variable name="tot_conai" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{sale_order_line_prezzo_conai}*$F{sale_order_line_peso_conai}]]></variableExpression>
+	</variable>
 	<group name="Ordine" isStartNewPage="true" isResetPageNumber="true">
 		<groupExpression><![CDATA[$F{sale_order_name}+$F{sale_order_date_order}]]></groupExpression>
 		<groupHeader>
@@ -693,6 +700,18 @@ WHERE
 					<font size="10" isBold="false" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[CONFERMA D'ORDINE A CLIENTE]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="105" y="121" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{tot_conai}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="8" y="121" width="97" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[IMPONIBILE CONAI	]]></text>
 			</staticText>
 		</band>
 	</pageFooter>
