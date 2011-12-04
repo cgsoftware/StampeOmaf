@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Ordine" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="263"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -203,199 +203,199 @@ WHERE
 		<band height="2" splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="270" splitType="Stretch">
+		<band height="305" splitType="Stretch">
 			<rectangle radius="10">
-				<reportElement mode="Opaque" x="278" y="36" width="273" height="65" forecolor="#777777" backcolor="#777777"/>
+				<reportElement mode="Opaque" x="278" y="71" width="273" height="65" forecolor="#777777" backcolor="#777777"/>
 			</rectangle>
 			<rectangle radius="10">
-				<reportElement x="276" y="31" width="270" height="65" backcolor="#FFFFFF"/>
+				<reportElement x="276" y="66" width="270" height="65" backcolor="#FFFFFF"/>
 			</rectangle>
 			<textField>
-				<reportElement x="297" y="43" width="243" height="13"/>
+				<reportElement x="297" y="78" width="243" height="13"/>
 				<textElement verticalAlignment="Middle">
 					<font size="11" isBold="true" isStrikeThrough="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="297" y="33" width="138" height="11"/>
+				<reportElement x="297" y="68" width="138" height="11"/>
 				<textElement>
 					<font size="7" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Intestatario Documento]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement mode="Transparent" x="297" y="55" width="243" height="13"/>
+				<reportElement mode="Transparent" x="297" y="90" width="243" height="13"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_street}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="297" y="67" width="45" height="13"/>
+				<reportElement x="297" y="102" width="45" height="13"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}]]></textFieldExpression>
 			</textField>
 			<rectangle radius="10">
-				<reportElement x="281" y="106" width="270" height="67" forecolor="#777777" backcolor="#777777"/>
+				<reportElement x="281" y="141" width="270" height="67" forecolor="#777777" backcolor="#777777"/>
 			</rectangle>
 			<rectangle radius="10">
-				<reportElement x="276" y="104" width="270" height="65" backcolor="#FFFFFF"/>
+				<reportElement x="276" y="139" width="270" height="65" backcolor="#FFFFFF"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="281" y="106" width="138" height="11"/>
+				<reportElement x="281" y="141" width="138" height="11"/>
 				<textElement>
 					<font size="7" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Diversa Destinazione]]></text>
 			</staticText>
 			<rectangle radius="10">
-				<reportElement x="204" y="179" width="347" height="33" forecolor="#777777" backcolor="#777777"/>
+				<reportElement x="204" y="214" width="347" height="33" forecolor="#777777" backcolor="#777777"/>
 			</rectangle>
 			<rectangle radius="10">
-				<reportElement x="204" y="177" width="342" height="33"/>
+				<reportElement x="204" y="212" width="342" height="33"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="222" y="178" width="72" height="11"/>
+				<reportElement x="222" y="213" width="72" height="11"/>
 				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Tipo Documento]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="506" y="178" width="30" height="11"/>
+				<reportElement x="506" y="213" width="30" height="11"/>
 				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Pagina]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="222" y="188" width="120" height="16"/>
+				<reportElement x="222" y="223" width="120" height="16"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="9" isBold="true" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[CONFERMA D'ORDINE]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="506" y="188" width="30" height="18" printWhenGroupChanges="Ordine"/>
+				<reportElement x="506" y="223" width="30" height="18" printWhenGroupChanges="Ordine"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="350" y="178" width="65" height="11"/>
+				<reportElement x="350" y="213" width="65" height="11"/>
 				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[N° Documento]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="350" y="188" width="65" height="16"/>
+				<reportElement x="350" y="223" width="65" height="16"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10" isBold="true" isItalic="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sale_order_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="428" y="178" width="70" height="11"/>
+				<reportElement x="428" y="213" width="70" height="11"/>
 				<textElement>
 					<font size="8" isBold="false" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Data Documento]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="428" y="188" width="70" height="16"/>
+				<reportElement x="428" y="223" width="70" height="16"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="false" isItalic="false"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{sale_order_date_order}]]></textFieldExpression>
 			</textField>
 			<rectangle radius="10">
-				<reportElement x="0" y="216" width="554" height="53"/>
+				<reportElement x="0" y="251" width="554" height="53"/>
 			</rectangle>
 			<line>
-				<reportElement x="2" y="240" width="550" height="1"/>
+				<reportElement x="2" y="275" width="550" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="13" y="217" width="72" height="11"/>
+				<reportElement x="13" y="252" width="72" height="11"/>
 				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Codice Cliente]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="13" y="228" width="72" height="11"/>
+				<reportElement x="13" y="263" width="72" height="11"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sale_order_partner_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="13" y="245" width="52" height="11"/>
+				<reportElement x="13" y="280" width="52" height="11"/>
 				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Pagamento]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="98" y="228" width="95" height="13"/>
+				<reportElement x="98" y="263" width="95" height="13"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_vat}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="435" y="217" width="52" height="11"/>
+				<reportElement x="435" y="252" width="52" height="11"/>
 				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Valuta]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="310" y="245" width="52" height="11"/>
+				<reportElement x="310" y="280" width="52" height="11"/>
 				<textElement>
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Banca]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="98" y="217" width="60" height="11"/>
+				<reportElement x="98" y="252" width="60" height="11"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[P. IVA/C. fisc.:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="435" y="228" width="52" height="11"/>
+				<reportElement x="435" y="263" width="52" height="11"/>
 				<textElement textAlignment="Left" verticalAlignment="Bottom">
 					<font size="8" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[EURO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="288" y="118" width="70" height="10"/>
+				<reportElement mode="Opaque" x="288" y="153" width="70" height="10"/>
 				<textElement>
 					<font size="7" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Idem]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="342" y="68" width="198" height="13"/>
+				<reportElement x="342" y="103" width="198" height="13"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_city}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="4" y="256" width="145" height="13"/>
+				<reportElement x="4" y="291" width="145" height="13"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{account_payment_term_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="284" y="139" width="37" height="10">
+				<reportElement x="284" y="174" width="37" height="10">
 					<printWhenExpression><![CDATA[$F{sale_order_partner_invoice_id}.compareTo($F{sale_order_partner_shipping_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -404,7 +404,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_zip}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="324" y="139" width="129" height="10">
+				<reportElement x="324" y="174" width="129" height="10">
 					<printWhenExpression><![CDATA[$F{sale_order_partner_invoice_id}.compareTo($F{sale_order_partner_shipping_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -413,7 +413,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_city}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="284" y="129" width="208" height="10">
+				<reportElement x="284" y="164" width="208" height="10">
 					<printWhenExpression><![CDATA[$F{sale_order_partner_invoice_id}.compareTo($F{sale_order_partner_shipping_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -422,7 +422,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_street}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Opaque" x="284" y="117" width="243" height="13">
+				<reportElement mode="Opaque" x="284" y="152" width="243" height="13">
 					<printWhenExpression><![CDATA[$F{sale_order_partner_invoice_id}.compareTo($F{sale_order_partner_shipping_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -431,19 +431,27 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="249" y="217" width="60" height="11"/>
+				<reportElement x="249" y="252" width="60" height="11"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Agente]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="249" y="228" width="100" height="11"/>
+				<reportElement x="249" y="263" width="100" height="11"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sale_agent_name}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="351" y="5" width="199" height="56"/>
+				<imageExpression class="java.lang.String"><![CDATA["./logoomaf2.gif"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="5" y="5" width="136" height="175"/>
+				<imageExpression class="java.lang.String"><![CDATA["./logoomaf1.gif"]]></imageExpression>
+			</image>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -702,12 +710,12 @@ WHERE
 				<text><![CDATA[CONFERMA D'ORDINE A CLIENTE]]></text>
 			</staticText>
 			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="105" y="121" width="100" height="20"/>
+				<reportElement x="98" y="13" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{tot_conai}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="8" y="121" width="97" height="15"/>
+				<reportElement x="1" y="13" width="97" height="15"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="false" isItalic="false"/>
 				</textElement>

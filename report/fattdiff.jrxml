@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DDT" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="13"/>
-	<property name="ireport.y" value="195"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Righe" mode="Opaque">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
@@ -116,7 +116,8 @@
      product_template."description_sale" AS product_template_description_sale,
      sale_agent."name" AS sale_agent_name,
      res_partner_address."mobile" AS res_partner_address_mobile,
-     res_partner_address."phone" AS res_partner_address_phone
+     res_partner_address."phone" AS res_partner_address_phone,
+     fiscaldoc_righe."id" AS fiscaldoc_righe_id
 FROM
      "public"."fiscaldoc_header" fiscaldoc_header INNER JOIN "public"."fiscaldoc_righe" fiscaldoc_righe ON fiscaldoc_header."id" = fiscaldoc_righe."name"
      LEFT OUTER JOIN "public"."fiscaldoc_spedizioni" fiscaldoc_spedizioni ON fiscaldoc_header."spedizione" = fiscaldoc_spedizioni."id"
@@ -143,7 +144,7 @@ WHERE
  AND fiscaldoc_header."data_documento" >= to_date($P{dadata},'YYYY-MM-DD')
  AND fiscaldoc_header."data_documento" <= to_date($P{dadata},'YYYY-MM-DD')
 ORDER BY
-     fiscaldoc_header_numdoc ASC]]>
+     fiscaldoc_righe_id ASC]]>
 	</queryString>
 	<field name="fiscaldoc_header_agente" class="java.lang.Integer"/>
 	<field name="fiscaldoc_header_data_documento" class="java.sql.Date"/>
@@ -231,6 +232,7 @@ ORDER BY
 	<field name="sale_agent_name" class="java.lang.String"/>
 	<field name="res_partner_address_mobile" class="java.lang.String"/>
 	<field name="res_partner_address_phone" class="java.lang.String"/>
+	<field name="fiscaldoc_righe_id" class="java.lang.Integer"/>
 	<sortField name="fiscaldoc_header_numdoc"/>
 	<variable name="variable1" class="java.lang.String">
 		<variableExpression><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></variableExpression>
@@ -248,22 +250,10 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="151" splitType="Stretch">
-			<rectangle radius="10">
-				<reportElement x="274" y="19" width="276" height="58" forecolor="#000000" backcolor="#FFFFFF"/>
-			</rectangle>
+		<band height="185" splitType="Stretch">
 			<rectangle radius="10">
 				<reportElement x="274" y="85" width="276" height="58" forecolor="#000000" backcolor="#FFFFFF"/>
 			</rectangle>
-			<textField isBlankWhenNull="true">
-				<reportElement x="283" y="52" width="261" height="11">
-					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_street}]]></textFieldExpression>
-			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="283" y="115" width="38" height="11"/>
 				<textElement>
@@ -272,29 +262,11 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="323" y="62" width="214" height="11">
-					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_city}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
 				<reportElement x="345" y="125" width="135" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_mobile}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="283" y="62" width="122" height="11">
-					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_zip}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="280" y="95" width="245" height="12"/>
@@ -317,31 +289,6 @@ ORDER BY
 				</textElement>
 				<text><![CDATA[Intestatario Documento]]></text>
 			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="289" y="30" width="248" height="13">
-					<printWhenExpression><![CDATA[$F{res_partner_address_a_street}]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="7" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[Idem]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="286" y="21" width="185" height="9"/>
-				<textElement>
-					<font size="5" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[Destinatario Merce]]></text>
-			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement mode="Opaque" x="282" y="30" width="245" height="12">
-					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
-			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="323" y="115" width="214" height="11"/>
 				<textElement>
@@ -356,6 +303,14 @@ ORDER BY
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_street}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="356" y="10" width="199" height="56"/>
+				<imageExpression class="java.lang.String"><![CDATA["./logoomaf2.gif"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="5" y="5" width="136" height="175"/>
+				<imageExpression class="java.lang.String"><![CDATA["./logoomaf1.gif"]]></imageExpression>
+			</image>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -440,7 +395,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_header_name}]]></textFieldExpression>
 			</textField>
-			<rectangle radius="10">
+			<rectangle radius="8">
 				<reportElement x="2" y="62" width="546" height="15" backcolor="#B7B7B7"/>
 			</rectangle>
 			<staticText>
@@ -772,13 +727,12 @@ ORDER BY
 					<font size="4"/>
 				</textElement>
 				<text><![CDATA[CONDIZIONI GENERALI
-La merce viaggia a rischio e pericolo del committente, anche se resa franco destino
-Non si accettano reclami di qualunque specie dopo 8 giorni dal ricevimento della merce.
-Pregasi controllare l'esattezza dei Vs. dati fiscali, in caso di errore comunicarlo tempestivamente,
-diversamente non ci riterremo obbligati in solido come previsto dall'Art. 41 D.P.R. 26/10/72 n. 633.
-LEGGE 675/96 E D.L. 196/2003: TUTELA DELLA PRIVACY - Vi informiamo che i Vs. dati
-anagrafici sono inseriti in una banca dati e vengono utilizzati per fini amministrativi e per adempimento
-di obblighi di legge. Salvo comunicazione contraria si presume il consenso]]></text>
+La merce viaggia a rischio e pericolo dell’acquirente, anche se resa franco destino. Non si accettano reclami di qualunque specie dopo 8 giorni dal ricevimento della merce.
+Per qualsiasi controversia è competente il foro di Martina Franca e di Taranto.
+In caso di ritardato pagamento decorreranno gli interessi commerciali d’uso. Le eventuali spese per emissione tratte/ri.ba. sono a carico dell’acquirente. Preghiamo controllare l'esattezza dei Vs. dati fiscali e, in caso di errore comunicarlo tempestivamente, diversamente non ci riterremo obbligati in solido come previsto dall'Art. 41 D.P.R.26/10/72 n. 633.
+LEGGE 675/96 E D.L. 196/2003: TUTELA DELLA PRIVACY - Vi informiamo che i Vs. dati anagrafici sono inseriti in una banca dati e vengono utilizzati per fini amministrativi e per adempimento di obblighi di legge. Salvo comunicazione contraria si presume il consenso.
+CONTRIBUTO CONAI ASSOLTO OVE DOVUTO
+MERCE DI ORIGINE PREFERENZIALE ITALIANA/CEE]]></text>
 			</staticText>
 			<line direction="BottomUp">
 				<reportElement mode="Transparent" x="210" y="28" width="1" height="77" printWhenGroupChanges="FAT"/>
@@ -882,9 +836,9 @@ di obblighi di legge. Salvo comunicazione contraria si presume il consenso]]></t
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_bolli}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="272" y="118" width="55" height="10"/>
-				<textElement>
-					<font size="8"/>
+				<reportElement x="265" y="118" width="62" height="16"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_documento}]]></textFieldExpression>
 			</textField>
