@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="produzione" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="130"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="danr" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="anr" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT
+     mrp_production."origin" AS mrp_production_origin,
+     mrp_production."product_uos_qty" AS mrp_production_product_uos_qty,
+     mrp_production."product_uom" AS mrp_production_product_uom,
+     mrp_production."product_qty" AS mrp_production_product_qty,
+     mrp_production."product_uos" AS mrp_production_product_uos,
+     mrp_production."product_id" AS mrp_production_product_id,
+     mrp_production."date_start" AS mrp_production_date_start,
+     mrp_production."name" AS mrp_production_name,
+     mrp_production."bom_id" AS mrp_production_bom_id,
+     mrp_production."routing_id" AS mrp_production_routing_id,
+     mrp_production."product_qty_planned" AS mrp_production_product_qty_planned,
+     product_uom."uom_type" AS product_uom_uom_type,
+     product_uom."name" AS product_uom_name,
+     product_product."name_template" AS product_product_name_template,
+     product_product."default_code" AS product_product_default_code,
+     product_product."codice" AS product_product_codice,
+     product_product."peso" AS product_product_peso,
+     product_product."variants" AS product_product_variants,
+     product_product."marchio_ids" AS product_product_marchio_ids,
+     product_product."spess" AS product_product_spess,
+     product_product."lung" AS product_product_lung,
+     product_product."peso_specifico" AS product_product_peso_specifico,
+     product_product."larg" AS product_product_larg,
+     product_product."soff" AS product_product_soff,
+     product_product."extra" AS product_product_extra,
+     product_product."patt" AS product_product_patt,
+     product_product."minigrip" AS product_product_minigrip,
+     product_product."microforatura" AS product_product_microforatura,
+     mrp_routing."code" AS mrp_routing_code,
+     mrp_routing."name" AS mrp_routing_name,
+     marchio_marchio."name" AS marchio_marchio_name
+FROM
+     "public"."product_uom" product_uom RIGHT OUTER JOIN "public"."mrp_production" mrp_production ON product_uom."id" = mrp_production."product_uom"
+     LEFT OUTER JOIN "public"."product_product" product_product ON mrp_production."product_id" = product_product."id"
+     LEFT OUTER JOIN "public"."mrp_routing" mrp_routing ON mrp_production."routing_id" = mrp_routing."id"
+     LEFT OUTER JOIN "public"."marchio_marchio" marchio_marchio ON product_product."marchio_ids" = marchio_marchio."id"
+WHERE
+     mrp_production."name" >= $P{anr}
+ AND mrp_production."name" <= $P{anr}]]>
+	</queryString>
+	<field name="mrp_production_origin" class="java.lang.String"/>
+	<field name="mrp_production_product_uos_qty" class="java.lang.Double"/>
+	<field name="mrp_production_product_uom" class="java.lang.Integer"/>
+	<field name="mrp_production_product_qty" class="java.lang.Double"/>
+	<field name="mrp_production_product_uos" class="java.lang.Integer"/>
+	<field name="mrp_production_product_id" class="java.lang.Integer"/>
+	<field name="mrp_production_date_start" class="java.sql.Timestamp"/>
+	<field name="mrp_production_name" class="java.lang.String"/>
+	<field name="mrp_production_bom_id" class="java.lang.Integer"/>
+	<field name="mrp_production_routing_id" class="java.lang.Integer"/>
+	<field name="mrp_production_product_qty_planned" class="java.lang.Double"/>
+	<field name="product_uom_uom_type" class="java.lang.String"/>
+	<field name="product_uom_name" class="java.lang.String"/>
+	<field name="product_product_name_template" class="java.lang.String"/>
+	<field name="product_product_default_code" class="java.lang.String"/>
+	<field name="product_product_codice" class="java.lang.Integer"/>
+	<field name="product_product_peso" class="java.math.BigDecimal"/>
+	<field name="product_product_variants" class="java.lang.String"/>
+	<field name="product_product_marchio_ids" class="java.lang.Integer"/>
+	<field name="product_product_spess" class="java.math.BigDecimal"/>
+	<field name="product_product_lung" class="java.math.BigDecimal"/>
+	<field name="product_product_peso_specifico" class="java.math.BigDecimal"/>
+	<field name="product_product_larg" class="java.math.BigDecimal"/>
+	<field name="product_product_soff" class="java.math.BigDecimal"/>
+	<field name="product_product_extra" class="java.math.BigDecimal"/>
+	<field name="product_product_patt" class="java.math.BigDecimal"/>
+	<field name="product_product_minigrip" class="java.math.BigDecimal"/>
+	<field name="product_product_microforatura" class="java.lang.Boolean"/>
+	<field name="mrp_routing_code" class="java.lang.String"/>
+	<field name="mrp_routing_name" class="java.lang.String"/>
+	<field name="marchio_marchio_name" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="201" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="174" height="165"/>
+				<imageExpression class="java.lang.String"><![CDATA["/home/andrea/OpenErp/AddonsCentralizzataR6RC2/addons/StampeOmaf/report/logoomaf1.gif"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="397" y="30" width="219" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ordine di produzione n.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="639" y="29" width="116" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="396" y="67" width="219" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Linea di produzione]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="639" y="67" width="116" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_routing_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="396" y="108" width="231" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data di inizio produzione ]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="639" y="108" width="116" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{mrp_production_date_start}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="181" width="553" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Articolo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="614" y="181" width="88" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Marchio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="714" y="181" width="88" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantità]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="40" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="190" y="0" width="424" height="20"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_variants}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="39" y="0" width="151" height="20"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_name_template}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="614" y="0" width="88" height="20"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{marchio_marchio_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="39" height="20"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_default_code}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="726" y="0" width="65" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{mrp_production_product_qty}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="702" y="0" width="24" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_uom_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="314" splitType="Stretch">
+			<image>
+				<reportElement x="64" y="0" width="738" height="314"/>
+				<imageExpression class="java.lang.String"><![CDATA["./griglia.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

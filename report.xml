@@ -56,5 +56,16 @@
         <field name="jasper_output">pdf</field>	
 	</record>
 	
+	<record id="report_mrp" model="ir.actions.report.xml">
+		<field name="name">Stampa di Produzione</field>
+		<field name="type">ir.actions.report.xml</field>
+		<field name="model">mrp.production</field>
+		<field name="report_name">stampa_mrp</field>
+		<field name="report_rml">StampeOmaf/report/produzione.jrxml</field>
+		<field name="report_type">pdf</field>
+        <field name="jasper_report">True</field>
+        <field name="jasper_output">pdf</field>	
+	</record>
+	
  </data>
 </openerp>

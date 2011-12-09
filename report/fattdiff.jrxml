@@ -554,28 +554,36 @@ ORDER BY
 			<frame>
 				<reportElement style="Righe" mode="Opaque" x="5" y="0" width="547" height="10"/>
 				<textField isBlankWhenNull="true">
-					<reportElement x="509" y="0" width="34" height="10"/>
+					<reportElement x="509" y="0" width="34" height="10">
+						<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{account_tax_description}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="280" y="0" width="24" height="10"/>
+					<reportElement x="280" y="0" width="24" height="10">
+						<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{product_uom_name}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="431" y="0" width="27" height="10"/>
+					<reportElement x="431" y="0" width="27" height="10">
+						<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_righe_sconti_riga}]]></textFieldExpression>
 				</textField>
 				<textField pattern="¤ #,##0.00">
-					<reportElement x="459" y="0" width="50" height="10"/>
+					<reportElement x="459" y="0" width="50" height="10">
+						<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
@@ -590,14 +598,18 @@ ORDER BY
 				</textField>
 			</frame>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="370" y="0" width="50" height="10"/>
+				<reportElement x="370" y="0" width="50" height="10">
+					<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement x="315" y="0" width="55" height="10"/>
+				<reportElement x="315" y="0" width="55" height="10">
+					<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
