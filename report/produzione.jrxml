@@ -39,11 +39,20 @@
      product_product."microforatura" AS product_product_microforatura,
      mrp_routing."code" AS mrp_routing_code,
      mrp_routing."name" AS mrp_routing_name,
-     marchio_marchio."name" AS marchio_marchio_name
+     marchio_marchio."name" AS marchio_marchio_name,
+     stock_picking."order_id" AS stock_picking_order_id,
+     sale_order."name" AS sale_order_name,
+     res_partner."name" AS res_partner_name,
+     res_partner."codice" AS res_partner_codice,
+     sale_order."partner_id" AS sale_order_partner_id,
+     res_partner."id" AS res_partner_id
 FROM
      "public"."product_uom" product_uom RIGHT OUTER JOIN "public"."mrp_production" mrp_production ON product_uom."id" = mrp_production."product_uom"
      LEFT OUTER JOIN "public"."product_product" product_product ON mrp_production."product_id" = product_product."id"
      LEFT OUTER JOIN "public"."mrp_routing" mrp_routing ON mrp_production."routing_id" = mrp_routing."id"
+     LEFT OUTER JOIN "public"."stock_picking" stock_picking ON mrp_production."picking_id" = stock_picking."id"
+     LEFT OUTER JOIN "public"."sale_order" sale_order ON stock_picking."order_id" = sale_order."id"
+     LEFT OUTER JOIN "public"."res_partner" res_partner ON sale_order."partner_id" = res_partner."id"
      LEFT OUTER JOIN "public"."marchio_marchio" marchio_marchio ON product_product."marchio_ids" = marchio_marchio."id"
 WHERE
      mrp_production."name" >= $P{anr}
@@ -80,6 +89,12 @@ WHERE
 	<field name="mrp_routing_code" class="java.lang.String"/>
 	<field name="mrp_routing_name" class="java.lang.String"/>
 	<field name="marchio_marchio_name" class="java.lang.String"/>
+	<field name="stock_picking_order_id" class="java.lang.Integer"/>
+	<field name="sale_order_name" class="java.lang.String"/>
+	<field name="res_partner_name" class="java.lang.String"/>
+	<field name="res_partner_codice" class="java.lang.Integer"/>
+	<field name="sale_order_partner_id" class="java.lang.Integer"/>
+	<field name="res_partner_id" class="java.lang.Integer"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -90,45 +105,45 @@ WHERE
 		<band height="201" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="174" height="165"/>
-				<imageExpression class="java.lang.String"><![CDATA["/home/andrea/OpenErp/AddonsCentralizzataR6RC2/addons/StampeOmaf/report/logoomaf1.gif"]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA["./logoomaf1.gif"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="397" y="30" width="219" height="20"/>
+				<reportElement x="397" y="11" width="219" height="20"/>
 				<textElement>
 					<font size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Ordine di produzione n.]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="639" y="29" width="116" height="20"/>
+				<reportElement x="639" y="10" width="116" height="20"/>
 				<textElement textAlignment="Right">
 					<font size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="396" y="67" width="219" height="20"/>
+				<reportElement x="396" y="48" width="219" height="20"/>
 				<textElement>
 					<font size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Linea di produzione]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="639" y="67" width="116" height="20"/>
+				<reportElement x="639" y="48" width="116" height="20"/>
 				<textElement textAlignment="Right">
 					<font size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_routing_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="396" y="108" width="231" height="20"/>
+				<reportElement x="396" y="89" width="231" height="20"/>
 				<textElement>
 					<font size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Data di inizio produzione ]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="639" y="108" width="116" height="20"/>
+				<reportElement x="639" y="89" width="116" height="20"/>
 				<textElement textAlignment="Right">
 					<font size="16" isBold="true"/>
 				</textElement>
@@ -155,6 +170,34 @@ WHERE
 				</textElement>
 				<text><![CDATA[Quantità]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="396" y="126" width="231" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Documento ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="639" y="126" width="116" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_origin}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="396" y="161" width="231" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="639" y="165" width="116" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>

@@ -117,7 +117,11 @@
      sale_agent."name" AS sale_agent_name,
      res_partner_address."mobile" AS res_partner_address_mobile,
      res_partner_address."phone" AS res_partner_address_phone,
-     fiscaldoc_righe."id" AS fiscaldoc_righe_id
+     fiscaldoc_righe."id" AS fiscaldoc_righe_id,
+     res_province."code" AS res_province_code,
+     res_province."name" AS res_province_name,
+     res_province_A."name" AS res_province_A_name,
+     res_province_A."code" AS res_province_A_code
 FROM
      "public"."fiscaldoc_header" fiscaldoc_header INNER JOIN "public"."fiscaldoc_righe" fiscaldoc_righe ON fiscaldoc_header."id" = fiscaldoc_righe."name"
      LEFT OUTER JOIN "public"."fiscaldoc_spedizioni" fiscaldoc_spedizioni ON fiscaldoc_header."spedizione" = fiscaldoc_spedizioni."id"
@@ -129,10 +133,11 @@ FROM
      LEFT OUTER JOIN "public"."res_users" res_users ON fiscaldoc_header."agente" = res_users."id"
      LEFT OUTER JOIN "public"."account_payment_term" account_payment_term ON fiscaldoc_header."pagamento_id" = account_payment_term."id"
      LEFT OUTER JOIN "public"."res_bank" res_bank ON fiscaldoc_header."banca_patner" = res_bank."id"
-     AND res_bank."id" = fiscaldoc_header."banca_azienda"
      LEFT OUTER JOIN "public"."sale_shop" sale_shop ON fiscaldoc_header."magazzino_id" = sale_shop."id"
      LEFT OUTER JOIN "public"."res_partner_address" res_partner_address ON fiscaldoc_header."partner_indfat_id" = res_partner_address."id"
      LEFT OUTER JOIN "public"."res_partner_address" res_partner_address_A ON fiscaldoc_header."partner_indcons_id" = res_partner_address_A."id"
+     LEFT OUTER JOIN "public"."res_province" res_province_A ON res_partner_address_A."province" = res_province_A."id"
+     LEFT OUTER JOIN "public"."res_province" res_province ON res_partner_address."province" = res_province."id"
      LEFT OUTER JOIN "public"."sale_agent" sale_agent ON res_partner."agent_id" = sale_agent."id"
      LEFT OUTER JOIN "public"."product_uom" product_uom ON fiscaldoc_righe."product_uom" = product_uom."id"
      LEFT OUTER JOIN "public"."account_tax" account_tax ON fiscaldoc_righe."codice_iva" = account_tax."id"
@@ -233,6 +238,10 @@ ORDER BY
 	<field name="res_partner_address_mobile" class="java.lang.String"/>
 	<field name="res_partner_address_phone" class="java.lang.String"/>
 	<field name="fiscaldoc_righe_id" class="java.lang.Integer"/>
+	<field name="res_province_code" class="java.lang.String"/>
+	<field name="res_province_name" class="java.lang.String"/>
+	<field name="res_province_a_name" class="java.lang.String"/>
+	<field name="res_province_a_code" class="java.lang.String"/>
 	<sortField name="fiscaldoc_header_numdoc"/>
 	<variable name="variable1" class="java.lang.String">
 		<variableExpression><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></variableExpression>
@@ -267,14 +276,14 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_street}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="283" y="91" width="38" height="11"/>
+				<reportElement x="283" y="97" width="38" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="323" y="165" width="214" height="11">
+				<reportElement x="323" y="165" width="191" height="11">
 					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -283,7 +292,7 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_city}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="345" y="101" width="135" height="11"/>
+				<reportElement x="345" y="107" width="135" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -301,12 +310,12 @@ ORDER BY
 			<textField isStretchWithOverflow="true">
 				<reportElement x="280" y="71" width="245" height="12"/>
 				<textElement>
-					<font size="9" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="284" y="101" width="61" height="11"/>
+				<reportElement x="284" y="107" width="61" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -345,14 +354,14 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="323" y="91" width="214" height="11"/>
+				<reportElement x="323" y="97" width="191" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_city}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="283" y="81" width="261" height="11"/>
+				<reportElement x="283" y="87" width="261" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -366,6 +375,20 @@ ORDER BY
 				<reportElement x="351" y="4" width="199" height="56"/>
 				<imageExpression class="java.lang.String"><![CDATA["./logoomaf2.gif"]]></imageExpression>
 			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement x="509" y="98" width="18" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_province_code}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="514" y="166" width="18" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_province_a_code}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -612,7 +635,7 @@ ORDER BY
 			<frame>
 				<reportElement style="Righe" mode="Opaque" x="5" y="0" width="547" height="10"/>
 				<textField isBlankWhenNull="true">
-					<reportElement x="509" y="0" width="34" height="10"/>
+					<reportElement x="509" y="0" width="29" height="10"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>

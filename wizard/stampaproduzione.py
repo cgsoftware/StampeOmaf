@@ -42,7 +42,7 @@ class stampa_produzione(osv.osv_memory):
         return result
   
     def _print_report(self, cr, uid, ids, data, context=None):
-        import pdb;pdb.set_trace()
+        #import pdb;pdb.set_trace()
         if context is None:
             context = {}
         pool = pooler.get_pool(cr.dbname)
@@ -57,7 +57,7 @@ class stampa_produzione(osv.osv_memory):
  
 
     def check_report(self, cr, uid, ids, context=None):
-        import pdb;pdb.set_trace()
+        #import pdb;pdb.set_trace()
         if context is None:
             context = {}
             
