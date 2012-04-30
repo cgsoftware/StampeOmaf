@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="fatturato" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="atipodoc" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="tipodoc" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="dadata" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="adata" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT
+     fiscaldoc_righe."flag_omaggi" AS fiscaldoc_righe_flag_omaggi,
+     fiscaldoc_righe."product_uom" AS fiscaldoc_righe_product_uom,
+     fiscaldoc_righe."product_uom_qty" AS fiscaldoc_righe_product_uom_qty,
+     fiscaldoc_righe."perc_provv" AS fiscaldoc_righe_perc_provv,
+     fiscaldoc_righe."contropartita" AS fiscaldoc_righe_contropartita,
+     fiscaldoc_righe."product_uos" AS fiscaldoc_righe_product_uos,
+     fiscaldoc_righe."sconti_riga" AS fiscaldoc_righe_sconti_riga,
+     fiscaldoc_righe."product_id" AS fiscaldoc_righe_product_id,
+     fiscaldoc_righe."totale_riga" AS fiscaldoc_righe_totale_riga,
+     fiscaldoc_righe."name" AS fiscaldoc_righe_name,
+     fiscaldoc_righe."discount_riga" AS fiscaldoc_righe_discount_riga,
+     fiscaldoc_righe."order_line_id" AS fiscaldoc_righe_order_line_id,
+     fiscaldoc_righe."codice_iva" AS fiscaldoc_righe_codice_iva,
+     fiscaldoc_righe."descrizione_riga" AS fiscaldoc_righe_descrizione_riga,
+     fiscaldoc_righe."move_ids" AS fiscaldoc_righe_move_ids,
+     fiscaldoc_righe."product_prezzo_unitario" AS fiscaldoc_righe_product_prezzo_unitario,
+     fiscaldoc_righe."prezzo_netto" AS fiscaldoc_righe_prezzo_netto,
+     fiscaldoc_righe."peso_conai" AS fiscaldoc_righe_peso_conai,
+     fiscaldoc_righe."cod_conai" AS fiscaldoc_righe_cod_conai,
+     fiscaldoc_righe."prezzo_conai" AS fiscaldoc_righe_prezzo_conai,
+     fiscaldoc_righe."product_uos_qty" AS fiscaldoc_righe_product_uos_qty,
+     fiscaldoc_causalidoc."tipo_operazione" AS fiscaldoc_causalidoc_tipo_operazione,
+     product_category."name" AS product_category_name
+FROM
+     "public"."fiscaldoc_header" fiscaldoc_header RIGHT OUTER JOIN "public"."fiscaldoc_righe" fiscaldoc_righe ON fiscaldoc_header."id" = fiscaldoc_righe."name"
+     LEFT OUTER JOIN "public"."fiscaldoc_causalidoc" fiscaldoc_causalidoc ON fiscaldoc_header."tipo_doc" = fiscaldoc_causalidoc."id"
+     LEFT OUTER JOIN "public"."product_product" product_product ON fiscaldoc_righe."product_id" = product_product."id"
+     LEFT OUTER JOIN "public"."product_template" product_template ON product_product."product_tmpl_id" = product_template."id"
+     LEFT OUTER JOIN "public"."product_category" product_category ON product_template."categ_id" = product_category."id"
+WHERE
+     fiscaldoc_causalidoc."tipo_operazione" = 'C'
+ AND fiscaldoc_header."data_documento" >= to_date($P{dadata},'YYYY-MM-DD')
+ AND fiscaldoc_header."data_documento" <= to_date($P{adata},'YYYY-MM-DD')
+ AND fiscaldoc_header."tipo_doc" >= $P{tipodoc}
+ AND fiscaldoc_header."tipo_doc" <= $P{atipodoc}]]>
+	</queryString>
+	<field name="fiscaldoc_righe_flag_omaggi" class="java.lang.String"/>
+	<field name="fiscaldoc_righe_product_uom" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_product_uom_qty" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_perc_provv" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_contropartita" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_product_uos" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_sconti_riga" class="java.lang.String"/>
+	<field name="fiscaldoc_righe_product_id" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_totale_riga" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_name" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_discount_riga" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_order_line_id" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_codice_iva" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_descrizione_riga" class="java.lang.String"/>
+	<field name="fiscaldoc_righe_move_ids" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_product_prezzo_unitario" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_prezzo_netto" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_peso_conai" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_cod_conai" class="java.lang.Integer"/>
+	<field name="fiscaldoc_righe_prezzo_conai" class="java.math.BigDecimal"/>
+	<field name="fiscaldoc_righe_product_uos_qty" class="java.lang.Double"/>
+	<field name="fiscaldoc_causalidoc_tipo_operazione" class="java.lang.String"/>
+	<field name="product_category_name" class="java.lang.String"/>
+	<variable name="pr_unit_gr" class="java.math.BigDecimal" resetType="Group" resetGroup="Categoria" calculation="Sum">
+		<variableExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario}]]></variableExpression>
+	</variable>
+	<variable name="pr_riga_gr" class="java.math.BigDecimal" resetType="Group" resetGroup="Categoria" calculation="Sum">
+		<variableExpression><![CDATA[$F{fiscaldoc_righe_totale_riga}]]></variableExpression>
+	</variable>
+	<variable name="TOT_UNIT" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario}]]></variableExpression>
+	</variable>
+	<variable name="TOT_RIGA" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{fiscaldoc_righe_totale_riga}]]></variableExpression>
+	</variable>
+	<group name="Categoria">
+		<groupExpression><![CDATA[$F{product_category_name}]]></groupExpression>
+		<groupHeader>
+			<band height="27">
+				<textField>
+					<reportElement x="0" y="0" width="100" height="10"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{product_category_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="50">
+				<textField pattern="#,##0.0000">
+					<reportElement x="320" y="0" width="100" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{pr_unit_gr}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.0000">
+					<reportElement x="455" y="0" width="100" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{pr_riga_gr}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="65" height="20"/>
+					<textElement>
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTALE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="100" y="0" width="185" height="20"/>
+					<textElement>
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{product_category_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="49" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="16" width="218" height="20"/>
+				<textElement/>
+				<text><![CDATA[MAINETTI OMAF STAMPA DEL FATTURATO]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="305" height="10"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_righe_descrizione_riga}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0000" isBlankWhenNull="true">
+				<reportElement x="320" y="0" width="100" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0000" isBlankWhenNull="true">
+				<reportElement x="455" y="0" width="100" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_righe_totale_riga}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="50">
+			<staticText>
+				<reportElement x="0" y="0" width="115" height="20"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTALE GENERALE]]></text>
+			</staticText>
+			<textField pattern="#,##0.0000" isBlankWhenNull="true">
+				<reportElement x="320" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{TOT_UNIT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0000" isBlankWhenNull="true">
+				<reportElement x="455" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{TOT_RIGA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

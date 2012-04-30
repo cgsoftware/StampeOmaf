@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DDT" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="806"/>
 	<style name="Righe" mode="Opaque">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
@@ -30,6 +30,9 @@
 		<defaultValueExpression><![CDATA["./"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="prezzi" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="agente" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
      fiscaldoc_header."agente" AS fiscaldoc_header_agente,
@@ -55,7 +58,6 @@
      fiscaldoc_header."totale_colli" AS fiscaldoc_header_totale_colli,
      fiscaldoc_header."progr" AS fiscaldoc_header_progr,
      fiscaldoc_header."banca_azienda" AS fiscaldoc_header_banca_azienda,
-     fiscaldoc_header."vettore" AS fiscaldoc_header_vettore,
      fiscaldoc_header."spese_incasso" AS fiscaldoc_header_spese_incasso,
      fiscaldoc_header."magazzino_destinazione_id" AS fiscaldoc_header_magazzino_destinazione_id,
      fiscaldoc_header."totale_bolli" AS fiscaldoc_header_totale_bolli,
@@ -122,7 +124,21 @@
      res_province."code" AS res_province_code,
      res_province."name" AS res_province_name,
      res_province_A."code" AS res_province_A_code,
-     res_province_A."name" AS res_province_A_name
+     res_province_A."name" AS res_province_A_name,
+     res_partner_address_B."name" AS res_partner_address_B_name,
+     res_partner_address_B."zip" AS res_partner_address_B_zip,
+     res_partner_address_B."city" AS res_partner_address_B_city,
+     res_partner_A."name" AS res_partner_A_name,
+     res_province_B."name" AS res_province_B_name,
+     res_province_B."code" AS res_province_B_code,
+     res_partner_address_B."mobile" AS res_partner_address_B_mobile,
+     res_partner_address_B."phone" AS res_partner_address_B_phone,
+     res_partner_address_B."street" AS res_partner_address_B_street,
+     stock_location."name" AS stock_location_name,
+     res_partner."ref" AS res_partner_ref,
+     res_partner_address."name" AS res_partner_address_name,
+     res_partner_address_A."name" AS res_partner_address_A_name,
+     res_partner."fiscalcode" AS res_partner_fiscalcode
 FROM
      "public"."fiscaldoc_header" fiscaldoc_header INNER JOIN "public"."fiscaldoc_righe" fiscaldoc_righe ON fiscaldoc_header."id" = fiscaldoc_righe."name"
      LEFT OUTER JOIN "public"."fiscaldoc_spedizioni" fiscaldoc_spedizioni ON fiscaldoc_header."spedizione" = fiscaldoc_spedizioni."id"
@@ -137,6 +153,11 @@ FROM
      LEFT OUTER JOIN "public"."sale_shop" sale_shop ON fiscaldoc_header."magazzino_id" = sale_shop."id"
      LEFT OUTER JOIN "public"."res_partner_address" res_partner_address ON fiscaldoc_header."partner_indfat_id" = res_partner_address."id"
      LEFT OUTER JOIN "public"."res_partner_address" res_partner_address_A ON fiscaldoc_header."partner_indcons_id" = res_partner_address_A."id"
+     LEFT OUTER JOIN "public"."delivery_carrier" delivery_carrier ON fiscaldoc_header."vettore" = delivery_carrier."id"
+     LEFT OUTER JOIN "public"."stock_location" stock_location ON fiscaldoc_header."magazzino_id" = stock_location."id"
+     LEFT OUTER JOIN "public"."res_partner" res_partner_A ON delivery_carrier."partner_id" = res_partner_A."id"
+     LEFT OUTER JOIN "public"."res_partner_address" res_partner_address_B ON res_partner_A."id" = res_partner_address_B."partner_id"
+     LEFT OUTER JOIN "public"."res_province" res_province_B ON res_partner_address_B."province" = res_province_B."id"
      LEFT OUTER JOIN "public"."res_province" res_province_A ON res_partner_address_A."province" = res_province_A."id"
      AND res_province_A."id" = res_bank."province"
      LEFT OUTER JOIN "public"."res_province" res_province ON res_partner_address."province" = res_province."id"
@@ -176,7 +197,6 @@ ORDER BY
 	<field name="fiscaldoc_header_totale_colli" class="java.lang.Integer"/>
 	<field name="fiscaldoc_header_progr" class="java.lang.Integer"/>
 	<field name="fiscaldoc_header_banca_azienda" class="java.lang.Integer"/>
-	<field name="fiscaldoc_header_vettore" class="java.lang.Integer"/>
 	<field name="fiscaldoc_header_spese_incasso" class="java.math.BigDecimal"/>
 	<field name="fiscaldoc_header_magazzino_destinazione_id" class="java.lang.Integer"/>
 	<field name="fiscaldoc_header_totale_bolli" class="java.math.BigDecimal"/>
@@ -244,12 +264,37 @@ ORDER BY
 	<field name="res_province_name" class="java.lang.String"/>
 	<field name="res_province_a_code" class="java.lang.String"/>
 	<field name="res_province_a_name" class="java.lang.String"/>
+	<field name="res_partner_address_b_name" class="java.lang.String"/>
+	<field name="res_partner_address_b_zip" class="java.lang.String"/>
+	<field name="res_partner_address_b_city" class="java.lang.String"/>
+	<field name="res_partner_a_name" class="java.lang.String"/>
+	<field name="res_province_b_name" class="java.lang.String"/>
+	<field name="res_province_b_code" class="java.lang.String"/>
+	<field name="res_partner_address_b_mobile" class="java.lang.String"/>
+	<field name="res_partner_address_b_phone" class="java.lang.String"/>
+	<field name="res_partner_address_b_street" class="java.lang.String"/>
+	<field name="stock_location_name" class="java.lang.String"/>
+	<field name="res_partner_ref" class="java.lang.String"/>
+	<field name="res_partner_address_name" class="java.lang.String"/>
+	<field name="res_partner_address_a_name" class="java.lang.String"/>
+	<field name="res_partner_fiscalcode" class="java.lang.String"/>
 	<sortField name="fiscaldoc_header_numdoc"/>
 	<variable name="variable1" class="java.lang.String">
 		<variableExpression><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></variableExpression>
 	</variable>
-	<group name="FAT" isStartNewPage="true" isResetPageNumber="true">
-		<groupExpression><![CDATA[$F{fiscaldoc_header_name}+$F{fiscaldoc_header_data_documento}]]></groupExpression>
+	<variable name="Spazio" class="java.lang.String">
+		<variableExpression><![CDATA[' ']]></variableExpression>
+		<initialValueExpression><![CDATA[' ']]></initialValueExpression>
+	</variable>
+	<variable name="controllo" class="java.lang.Float" resetType="Group" resetGroup="FAT">
+		<variableExpression><![CDATA[$F{fiscaldoc_header_totale_merce}-$V{tmerce}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="tmerce" class="java.math.BigDecimal" resetType="Group" resetGroup="FAT" calculation="Sum">
+		<variableExpression><![CDATA[$F{fiscaldoc_righe_totale_riga}]]></variableExpression>
+	</variable>
+	<group name="FAT" isStartNewPage="true" isResetPageNumber="true" footerPosition="ForceAtBottom">
+		<groupExpression><![CDATA[$F{fiscaldoc_header_partner_id}]]></groupExpression>
 		<groupHeader>
 			<band/>
 		</groupHeader>
@@ -261,15 +306,15 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="197" splitType="Stretch">
+		<band height="218" splitType="Stretch">
 			<rectangle radius="10">
-				<reportElement x="272" y="132" width="276" height="58" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement x="272" y="153" width="276" height="58" forecolor="#000000" backcolor="#FFFFFF"/>
 			</rectangle>
 			<rectangle radius="10">
-				<reportElement x="273" y="66" width="276" height="58" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement x="273" y="73" width="276" height="72" forecolor="#000000" backcolor="#FFFFFF"/>
 			</rectangle>
 			<textField isBlankWhenNull="true">
-				<reportElement x="281" y="165" width="261" height="11">
+				<reportElement x="281" y="186" width="261" height="11">
 					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -278,46 +323,37 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_street}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="282" y="96" width="38" height="11"/>
+				<reportElement x="282" y="120" width="261" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}+$V{Spazio}+$F{res_partner_address_city}+$V{Spazio}+$F{res_province_code}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="321" y="175" width="195" height="11">
+				<reportElement x="281" y="196" width="259" height="11">
 					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_city}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_zip}+$V{Spazio}+$F{res_partner_address_a_city}+$V{Spazio}+$F{res_province_a_code}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="281" y="175" width="122" height="11">
-					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_zip}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="279" y="76" width="245" height="12"/>
+			<textField>
+				<reportElement x="279" y="85" width="245" height="12"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="285" y="68" width="185" height="9"/>
+				<reportElement x="285" y="77" width="185" height="9"/>
 				<textElement>
 					<font size="5" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Intestatario Documento]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="287" y="143" width="248" height="13">
+				<reportElement mode="Opaque" x="287" y="164" width="248" height="13">
 					<printWhenExpression><![CDATA[$F{res_partner_address_a_street}]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -326,80 +362,72 @@ ORDER BY
 				<text><![CDATA[Idem]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="284" y="134" width="185" height="9"/>
+				<reportElement x="284" y="155" width="185" height="9"/>
 				<textElement>
 					<font size="5" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Destinatario Merce]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
-				<reportElement mode="Opaque" x="280" y="143" width="245" height="12">
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="280" y="164" width="245" height="12">
 					<printWhenExpression><![CDATA[$F{fiscaldoc_header_partner_indfat_id}.compareTo($F{fiscaldoc_header_partner_indcons_id})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font size="9" isBold="true"/>
+					<font size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_a_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="322" y="96" width="202" height="11"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_city}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="282" y="86" width="261" height="11"/>
+				<reportElement x="282" y="110" width="261" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_street}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="344" y="106" width="135" height="11"/>
+				<reportElement x="344" y="130" width="135" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_mobile}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="283" y="106" width="61" height="11"/>
+				<reportElement x="283" y="130" width="61" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_phone}]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="351" y="5" width="199" height="56"/>
-				<imageExpression class="java.lang.String"><![CDATA["./logoomaf2.gif"]]></imageExpression>
-			</image>
-			<image>
-				<reportElement x="5" y="5" width="136" height="175"/>
+				<reportElement x="5" y="5" width="259" height="181"/>
 				<imageExpression class="java.lang.String"><![CDATA["./logoomaf1.gif"]]></imageExpression>
 			</image>
-			<textField isBlankWhenNull="true">
-				<reportElement x="524" y="97" width="19" height="11"/>
-				<textElement>
-					<font size="8"/>
+			<rectangle radius="10">
+				<reportElement x="2" y="189" width="269" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+			</rectangle>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="6" y="191" width="258" height="15"/>
+				<textElement verticalAlignment="Top">
+					<font size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_province_code}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="521" y="176" width="19" height="11"/>
-				<textElement>
-					<font size="8"/>
+			<staticText>
+				<reportElement x="7" y="204" width="199" height="8" printWhenGroupChanges="FAT"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5" isBold="true" isItalic="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_province_a_code}]]></textFieldExpression>
-			</textField>
+				<text><![CDATA[D.P.R. 14/08/96 n.472 Art.1 c.3]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="78" splitType="Stretch">
+		<band height="101" splitType="Stretch">
 			<rectangle radius="10">
-				<reportElement x="0" y="0" width="550" height="60"/>
+				<reportElement x="0" y="0" width="550" height="80"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="359" y="3" width="87" height="8"/>
+				<reportElement x="322" y="3" width="87" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="false"/>
 				</textElement>
@@ -420,13 +448,6 @@ ORDER BY
 				<text><![CDATA[PARTITA IVA CLI.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="268" y="3" width="82" height="8"/>
-				<textElement>
-					<font size="5" isBold="false" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[TIPO DOCUMENTO	]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="490" y="3" width="50" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="false"/>
@@ -434,25 +455,25 @@ ORDER BY
 				<text><![CDATA[DATA DOCUM.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="509" y="34" width="35" height="8"/>
+				<reportElement x="509" y="58" width="35" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Pagina]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="509" y="45" width="35" height="10"/>
+				<reportElement x="509" y="69" width="35" height="10"/>
 				<textElement textAlignment="Center">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="10" y="10" width="30" height="10"/>
+				<reportElement x="3" y="10" width="40" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{fiscaldoc_header_partner_id}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_ref}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="490" y="10" width="50" height="10"/>
@@ -461,50 +482,43 @@ ORDER BY
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{fiscaldoc_header_data_documento}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="266" y="10" width="84" height="20"/>
-				<textElement>
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></textFieldExpression>
-			</textField>
 			<textField>
-				<reportElement x="359" y="10" width="121" height="10"/>
+				<reportElement x="322" y="10" width="177" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_header_name}]]></textFieldExpression>
 			</textField>
 			<rectangle radius="8">
-				<reportElement x="2" y="62" width="546" height="15" backcolor="#B7B7B7"/>
+				<reportElement x="2" y="83" width="546" height="15" backcolor="#B7B7B7"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="315" y="66" width="55" height="8"/>
+				<reportElement x="315" y="87" width="55" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Quantità]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="285" y="66" width="24" height="8"/>
+				<reportElement x="312" y="87" width="24" height="8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[UM]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="509" y="66" width="34" height="8"/>
+				<reportElement x="509" y="87" width="34" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Cod. IVA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="5" y="66" width="210" height="8"/>
+				<reportElement x="11" y="87" width="65" height="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[Codice / Articolo	]]></text>
+				<text><![CDATA[Codice]]></text>
 			</staticText>
 			<line>
 				<reportElement x="0" y="30" width="550" height="1"/>
@@ -530,107 +544,118 @@ ORDER BY
 				<text><![CDATA[CODICE FISCALE CLIENTE]]></text>
 			</staticText>
 			<line>
-				<reportElement x="195" y="0" width="1" height="30"/>
+				<reportElement x="274" y="0" width="1" height="30"/>
 			</line>
 			<staticText>
-				<reportElement x="200" y="3" width="50" height="8"/>
+				<reportElement x="6" y="33" width="41" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[AGENTE]]></text>
 			</staticText>
 			<line>
-				<reportElement x="260" y="0" width="1" height="30"/>
-			</line>
-			<line>
 				<reportElement x="485" y="0" width="1" height="30"/>
 			</line>
 			<line>
-				<reportElement x="350" y="0" width="1" height="30"/>
-			</line>
-			<line>
-				<reportElement x="150" y="30" width="1" height="30"/>
+				<reportElement x="169" y="51" width="1" height="30"/>
 			</line>
 			<staticText>
-				<reportElement x="8" y="34" width="129" height="8"/>
+				<reportElement x="2" y="58" width="143" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[DESCRIZIONE PAGAMENTO]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="8" y="40" width="129" height="10"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="64" width="165" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{account_payment_term_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="160" y="34" width="129" height="8"/>
+				<reportElement x="172" y="58" width="144" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[BANCA D'APPOGGIO]]></text>
 			</staticText>
 			<line>
-				<reportElement x="295" y="30" width="1" height="30"/>
+				<reportElement x="455" y="51" width="1" height="29"/>
 			</line>
 			<staticText>
-				<reportElement x="314" y="34" width="129" height="8"/>
+				<reportElement x="467" y="58" width="33" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[DEPOSITO]]></text>
 			</staticText>
 			<line>
-				<reportElement x="485" y="30" width="1" height="30"/>
+				<reportElement x="505" y="51" width="1" height="30"/>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="160" y="40" width="129" height="10"/>
+				<reportElement x="174" y="64" width="282" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_bank_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="314" y="40" width="129" height="10"/>
+				<reportElement x="469" y="64" width="33" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{sale_shop_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{stock_location_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="370" y="66" width="55" height="8"/>
+				<reportElement x="370" y="87" width="55" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Prezzo Unitario	]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="431" y="66" width="27" height="8"/>
+				<reportElement x="431" y="87" width="27" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Sconto]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="459" y="66" width="50" height="8"/>
+				<reportElement x="459" y="87" width="50" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Importo Rigo]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="198" y="10" width="52" height="10"/>
+				<reportElement x="40" y="33" width="508" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sale_agent_name}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="50" width="550" height="1"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="129" y="11" width="151" height="10"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_fiscalcode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="80" y="87" width="65" height="8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[  Articolo	]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="10" splitType="Stretch">
+		<band height="10" splitType="Prevent">
 			<frame>
 				<reportElement style="Righe" mode="Opaque" x="5" y="0" width="547" height="10"/>
 				<textField isBlankWhenNull="true">
@@ -643,7 +668,7 @@ ORDER BY
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{account_tax_description}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="280" y="0" width="24" height="10"/>
+					<reportElement x="307" y="0" width="24" height="10"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
@@ -667,15 +692,24 @@ ORDER BY
 					</textElement>
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_righe_totale_riga}]]></textFieldExpression>
 				</textField>
+				<textField>
+					<reportElement x="1" y="0" width="80" height="10">
+						<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_default_code}]]></textFieldExpression>
+				</textField>
 				<textField isStretchWithOverflow="true">
-					<reportElement x="0" y="0" width="280" height="10"/>
+					<reportElement x="75" y="0" width="232" height="10"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_righe_descrizione_riga}]]></textFieldExpression>
 				</textField>
 			</frame>
-			<textField pattern="¤ #,##0.00">
+			<textField pattern="¤ #,##0.00000">
 				<reportElement x="370" y="0" width="50" height="10">
 					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
 				</reportElement>
@@ -684,7 +718,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario}]]></textFieldExpression>
 			</textField>
-			<textField pattern="###0" isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="315" y="0" width="55" height="10"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
@@ -693,559 +727,233 @@ ORDER BY
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
 	<pageFooter>
-		<band height="288" splitType="Stretch">
+		<band height="192">
 			<rectangle radius="10">
-				<reportElement x="0" y="0" width="555" height="186" printWhenGroupChanges="FAT" forecolor="#131313"/>
+				<reportElement x="0" y="0" width="555" height="99" forecolor="#131313"/>
 			</rectangle>
 			<line>
-				<reportElement x="0" y="27" width="553" height="1" printWhenGroupChanges="FAT"/>
-			</line>
-			<line>
-				<reportElement mode="Transparent" x="0" y="105" width="555" height="1" printWhenGroupChanges="FAT"/>
-			</line>
-			<line>
-				<reportElement x="0" y="133" width="555" height="1"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="63" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
+				<reportElement x="0" y="70" width="553" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="7" y="5" width="50" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="6" y="5" width="546" height="65"/>
 				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOTALE MERCE]]></text>
-			</staticText>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="7" y="13" width="50" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_netto_merce}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="70" y="5" width="50" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[% SC. CASSA]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="70" y="13" width="50" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_sconto_pagamento}]]></textFieldExpression>
-			</textField>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="125" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="132" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOTALE NETTO MERCE]]></text>
-			</staticText>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="132" y="13" width="70" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_netto_merce}-$F{fiscaldoc_header_sconto_pagamento}]]></textFieldExpression>
-			</textField>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="205" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="211" y="13" width="100" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_trasporto}]]></textFieldExpression>
-			</textField>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="320" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="215" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TRASPORTO]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="330" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[IMBALLO]]></text>
-			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="430" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="446" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[SPESE BANCARIE]]></text>
-			</staticText>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="330" y="13" width="95" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_imballo}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="446" y="13" width="100" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_incasso}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="2" y="30" width="203" height="74"/>
-				<textElement>
-					<font size="4"/>
+					<font size="6"/>
 				</textElement>
 				<text><![CDATA[CONDIZIONI GENERALI
 La merce viaggia a rischio e pericolo dell’acquirente, anche se resa franco destino. Non si accettano reclami di qualunque specie dopo 8 giorni dal ricevimento della merce.
 Per qualsiasi controversia è competente il foro di Martina Franca e di Taranto.
 In caso di ritardato pagamento decorreranno gli interessi commerciali d’uso. Le eventuali spese per emissione tratte/ri.ba. sono a carico dell’acquirente. Preghiamo controllare l'esattezza dei Vs. dati fiscali e, in caso di errore comunicarlo tempestivamente, diversamente non ci riterremo obbligati in solido come previsto dall'Art. 41 D.P.R.26/10/72 n. 633.
 LEGGE 675/96 E D.L. 196/2003: TUTELA DELLA PRIVACY - Vi informiamo che i Vs. dati anagrafici sono inseriti in una banca dati e vengono utilizzati per fini amministrativi e per adempimento di obblighi di legge. Salvo comunicazione contraria si presume il consenso.
-CONTRIBUTO CONAI ASSOLTO OVE DOVUTO
-MERCE DI ORIGINE PREFERENZIALE ITALIANA/CEE]]></text>
+CONTRIBUTO CONAI ASSOLTO OVE DOVUTO - MERCE DI ORIGINE PREFERENZIALE ITALIANA/CEE]]></text>
 			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="210" y="28" width="1" height="77" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="7" y="110" width="63" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOTALE IMPONIBILE]]></text>
-			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="85" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="7" y="118" width="63" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_imponibile}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="90" y="110" width="63" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOTALE IVA]]></text>
-			</staticText>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="90" y="118" width="63" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_imposta}]]></textFieldExpression>
-			</textField>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="156" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="160" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[SPESE ART. 15]]></text>
-			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="210" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="265" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="215" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[SPESE BOLLI]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="272" y="110" width="55" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOTALE FATTURA]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="345" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[ABBUONO]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="411" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[ANTICIPO]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="490" y="110" width="60" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOT. DA PAGARE]]></text>
-			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="335" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="395" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="465" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="215" y="118" width="45" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_bolli}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="265" y="118" width="65" height="15">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_documento}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="411" y="118" width="45" height="10">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_acconti}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="471" y="118" width="79" height="15">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_documento}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="9" y="138" width="103" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[SCADENZE EFFETTI]]></text>
-			</staticText>
-			<subreport runToBottom="false">
-				<reportElement x="267" y="31" width="277" height="70">
-					<printWhenExpression><![CDATA[$P{prezzi}.equals( 1 )]]></printWhenExpression>
-				</reportElement>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="name">
-					<subreportParameterExpression><![CDATA[$P{name}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="danr">
-					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="adata">
-					<subreportParameterExpression><![CDATA[$P{adata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="dadata">
-					<subreportParameterExpression><![CDATA[$P{dadata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="anr">
-					<subreportParameterExpression><![CDATA[$P{anr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "iva.jasper"]]></subreportExpression>
-			</subreport>
 			<rectangle radius="10">
-				<reportElement x="1" y="186" width="555" height="90" printWhenGroupChanges="FAT" forecolor="#131313"/>
+				<reportElement x="1" y="98" width="555" height="90" forecolor="#131313"/>
 			</rectangle>
 			<line>
-				<reportElement x="1" y="216" width="555" height="1"/>
+				<reportElement x="1" y="128" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="6" y="190" width="80" height="8"/>
+				<reportElement x="6" y="72" width="80" height="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[VETTORI]]></text>
+				<text><![CDATA[VETTORE]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="367" y="263" width="30" height="10" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="8"/>
+			<textField pattern="###0.000" isBlankWhenNull="true">
+				<reportElement x="367" y="175" width="30" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{fiscaldoc_header_totale_peso}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{fiscaldoc_header_totale_peso}]]></textFieldExpression>
 			</textField>
 			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="298" y="186" width="1" height="90" printWhenGroupChanges="FAT"/>
+				<reportElement mode="Transparent" x="298" y="98" width="1" height="30"/>
 			</line>
-			<textField>
-				<reportElement x="6" y="198" width="80" height="10"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{fiscaldoc_header_vettore}]]></textFieldExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement x="6" y="80" width="150" height="8"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_a_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="368" y="190" width="33" height="8"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[ORA RIT.]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="368" y="220" width="28" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="368" y="103" width="28" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[ORA INIZ.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="368" y="252" width="30" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="368" y="164" width="30" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[PESO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="411" y="220" width="140" height="11" printWhenGroupChanges="FAT"/>
+				<reportElement x="411" y="132" width="140" height="11"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Firma Conducente]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="301" y="190" width="60" height="8"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[DATA RIT. MERCE]]></text>
-			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="11" y="258" width="100" height="10" printWhenGroupChanges="FAT"/>
+				<reportElement x="137" y="141" width="267" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_spedizioni_name}]]></textFieldExpression>
 			</textField>
 			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="133" y="216" width="1" height="60" printWhenGroupChanges="FAT"/>
+				<reportElement mode="Transparent" x="133" y="128" width="1" height="30"/>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="6" y="228" width="45" height="10"/>
+				<reportElement x="6" y="140" width="128" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{stock_picking_carriage_condition_name}]]></textFieldExpression>
 			</textField>
 			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="403" y="186" width="1" height="90" printWhenGroupChanges="FAT"/>
+				<reportElement mode="Transparent" x="403" y="98" width="1" height="90"/>
 			</line>
 			<textField pattern="HH.mm" isBlankWhenNull="true">
-				<reportElement x="368" y="231" width="30" height="10"/>
+				<reportElement x="368" y="114" width="30" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{fiscaldoc_header_ora_trasporto}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="141" y="252" width="90" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="5" y="164" width="90" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[CAUSALE DEL TRASPORTO	]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="11" y="251" width="100" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="137" y="133" width="100" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[TRASPORTO A CURA]]></text>
 			</staticText>
 			<line>
-				<reportElement x="1" y="246" width="555" height="1"/>
+				<reportElement x="1" y="158" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="411" y="190" width="140" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="411" y="102" width="140" height="8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[FIRMA VETTORE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="6" y="221" width="45" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="6" y="133" width="45" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[PORTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="304" y="220" width="56" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="304" y="103" width="56" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[DATA INIZ. TRASP.]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="304" y="231" width="56" height="10"/>
+				<reportElement x="304" y="114" width="56" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{fiscaldoc_header_data_trasporto}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="141" y="261" width="90" height="10" printWhenGroupChanges="FAT"/>
+				<reportElement x="5" y="173" width="287" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{stock_picking_transportation_reason_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="411" y="252" width="140" height="11" printWhenGroupChanges="FAT"/>
+				<reportElement x="411" y="164" width="140" height="11"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Firma Destinatario]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="321" y="262" width="22" height="10" printWhenGroupChanges="FAT"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="321" y="174" width="22" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{fiscaldoc_header_totale_colli}]]></textFieldExpression>
 			</textField>
 			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="363" y="186" width="1" height="90" printWhenGroupChanges="FAT"/>
+				<reportElement mode="Transparent" x="363" y="98" width="1" height="30"/>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="141" y="229" width="114" height="10" printWhenGroupChanges="FAT"/>
+				<reportElement x="9" y="113" width="289" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{stock_picking_goods_description_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="316" y="252" width="35" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="316" y="164" width="35" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[N. COLLI]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="141" y="220" width="114" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="9" y="104" width="114" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[ASPETTO ESTERIORE DEI BENI]]></text>
 			</staticText>
-			<subreport>
-				<reportElement x="117" y="134" width="220" height="52"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="name">
-					<subreportParameterExpression><![CDATA[$P{name}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="danr">
-					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="scad_1">
-					<subreportParameterExpression><![CDATA[$P{scad_1}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="adata">
-					<subreportParameterExpression><![CDATA[$P{adata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="dadata">
-					<subreportParameterExpression><![CDATA[$P{dadata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="anr">
-					<subreportParameterExpression><![CDATA[$P{anr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "scadq.jasper"]]></subreportExpression>
-			</subreport>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="342" y="70" width="1" height="29"/>
+			</line>
 			<staticText>
-				<reportElement x="213" y="33" width="45" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="350" y="73" width="136" height="8"/>
 				<textElement>
-					<font size="6" isBold="true" isItalic="true"/>
+					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[TOTALI IVA]]></text>
+				<text><![CDATA[NOTE DI TRASPORTO]]></text>
 			</staticText>
-			<subreport runToBottom="false">
-				<reportElement x="269" y="73" width="210" height="40"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="name">
-					<subreportParameterExpression><![CDATA[$P{name}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="danr">
-					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="adata">
-					<subreportParameterExpression><![CDATA[$P{adata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="dadata">
-					<subreportParameterExpression><![CDATA[$P{dadata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="anr">
-					<subreportParameterExpression><![CDATA[$P{anr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "conai.jasper"]]></subreportExpression>
-			</subreport>
-			<staticText>
-				<reportElement x="212" y="73" width="54" height="8" printWhenGroupChanges="FAT"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="350" y="80" width="203" height="15"/>
 				<textElement>
-					<font size="6" isBold="true" isItalic="true"/>
+					<font size="6"/>
 				</textElement>
-				<text><![CDATA[TOTALI CONAI]]></text>
-			</staticText>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_header_note_di_trasporto}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="156" y="80" width="186" height="8"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_b_street}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="6" y="87" width="290" height="8">
+					<printWhenExpression><![CDATA[$F{res_partner_a_name}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_b_zip}+$V{Spazio}+$F{res_partner_address_b_city}+$V{Spazio}+$F{res_province_b_code}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="362" y="159" width="1" height="30"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="303" y="158" width="1" height="30"/>
+			</line>
 		</band>
 	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
 </jasperReport>

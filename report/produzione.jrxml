@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="produzione" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="produzione" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="832" leftMargin="5" rightMargin="5" topMargin="5" bottomMargin="5">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="130"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="danr" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>
@@ -40,18 +40,22 @@
      mrp_routing."code" AS mrp_routing_code,
      mrp_routing."name" AS mrp_routing_name,
      marchio_marchio."name" AS marchio_marchio_name,
-     stock_picking."order_id" AS stock_picking_order_id,
      sale_order."name" AS sale_order_name,
      res_partner."name" AS res_partner_name,
      res_partner."codice" AS res_partner_codice,
      sale_order."partner_id" AS sale_order_partner_id,
-     res_partner."id" AS res_partner_id
+     res_partner."id" AS res_partner_id,
+     mrp_production."buste_scatola" AS mrp_production_buste_scatola,
+     mrp_production."pz_busta_collo" AS mrp_production_pz_busta_collo,
+     mrp_production."tasselli" AS mrp_production_tasselli,
+     mrp_production."battute" AS mrp_production_battute,
+     mrp_production."note" AS mrp_production_note,
+     mrp_production."tipo_scatola" AS mrp_production_tipo_scatola
 FROM
      "public"."product_uom" product_uom RIGHT OUTER JOIN "public"."mrp_production" mrp_production ON product_uom."id" = mrp_production."product_uom"
      LEFT OUTER JOIN "public"."product_product" product_product ON mrp_production."product_id" = product_product."id"
      LEFT OUTER JOIN "public"."mrp_routing" mrp_routing ON mrp_production."routing_id" = mrp_routing."id"
-     LEFT OUTER JOIN "public"."stock_picking" stock_picking ON mrp_production."picking_id" = stock_picking."id"
-     LEFT OUTER JOIN "public"."sale_order" sale_order ON stock_picking."order_id" = sale_order."id"
+     LEFT OUTER JOIN "public"."sale_order" sale_order ON mrp_production."origin" = sale_order."name"
      LEFT OUTER JOIN "public"."res_partner" res_partner ON sale_order."partner_id" = res_partner."id"
      LEFT OUTER JOIN "public"."marchio_marchio" marchio_marchio ON product_product."marchio_ids" = marchio_marchio."id"
 WHERE
@@ -89,12 +93,17 @@ WHERE
 	<field name="mrp_routing_code" class="java.lang.String"/>
 	<field name="mrp_routing_name" class="java.lang.String"/>
 	<field name="marchio_marchio_name" class="java.lang.String"/>
-	<field name="stock_picking_order_id" class="java.lang.Integer"/>
 	<field name="sale_order_name" class="java.lang.String"/>
 	<field name="res_partner_name" class="java.lang.String"/>
 	<field name="res_partner_codice" class="java.lang.Integer"/>
 	<field name="sale_order_partner_id" class="java.lang.Integer"/>
 	<field name="res_partner_id" class="java.lang.Integer"/>
+	<field name="mrp_production_buste_scatola" class="java.lang.Integer"/>
+	<field name="mrp_production_pz_busta_collo" class="java.lang.Integer"/>
+	<field name="mrp_production_tasselli" class="java.lang.Integer"/>
+	<field name="mrp_production_battute" class="java.lang.Integer"/>
+	<field name="mrp_production_note" class="java.lang.String"/>
+	<field name="mrp_production_tipo_scatola" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -102,150 +111,245 @@ WHERE
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="201" splitType="Stretch">
-			<image>
-				<reportElement x="0" y="0" width="174" height="165"/>
-				<imageExpression class="java.lang.String"><![CDATA["./logoomaf1.gif"]]></imageExpression>
-			</image>
-			<staticText>
-				<reportElement x="397" y="11" width="219" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Ordine di produzione n.]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="639" y="10" width="116" height="20"/>
-				<textElement textAlignment="Right">
-					<font size="16" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_name}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="396" y="48" width="219" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Linea di produzione]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="639" y="48" width="116" height="20"/>
-				<textElement textAlignment="Right">
-					<font size="16" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_routing_name}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="396" y="89" width="231" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Data di inizio produzione ]]></text>
-			</staticText>
-			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="639" y="89" width="116" height="20"/>
-				<textElement textAlignment="Right">
-					<font size="16" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{mrp_production_date_start}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="181" width="553" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Articolo]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="614" y="181" width="88" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Marchio]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="714" y="181" width="88" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Quantità]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="396" y="126" width="231" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Documento ]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="639" y="126" width="116" height="20"/>
-				<textElement textAlignment="Right">
-					<font size="16" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_origin}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="396" y="161" width="231" height="20"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Cliente]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="639" y="165" width="116" height="20"/>
-				<textElement textAlignment="Right">
-					<font size="16" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
-			</textField>
-		</band>
+		<band splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="40" splitType="Stretch">
+		<band height="192" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="190" y="0" width="424" height="20"/>
+				<reportElement x="0" y="108" width="802" height="20" forecolor="#6A00FB"/>
 				<textElement textAlignment="Left">
-					<font size="10" isBold="true"/>
+					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_variants}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="39" y="0" width="151" height="20"/>
+				<reportElement x="0" y="88" width="713" height="20" forecolor="#1906C4"/>
 				<textElement textAlignment="Left">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_name_template}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="614" y="0" width="88" height="20"/>
-				<textElement textAlignment="Left">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{marchio_marchio_name}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="39" height="20"/>
-				<textElement textAlignment="Left">
-					<font size="10" isBold="true"/>
+					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_default_code}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="726" y="0" width="65" height="20"/>
+				<reportElement x="737" y="89" width="65" height="20" forecolor="#1906C4"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{mrp_production_product_qty}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="702" y="0" width="24" height="20"/>
+				<reportElement x="713" y="89" width="24" height="20"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
+					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_uom_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="34" y="168" width="768" height="15" forecolor="#F86007"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_note}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="780" y="148" width="22" height="20" forecolor="#7715EE"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{mrp_production_buste_scatola}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="663" y="148" width="117" height="20" forecolor="#7715EE"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Buste x Scatola]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="159" y="148" width="67" height="20" forecolor="#7715EE"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pz x Collo]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="226" y="148" width="31" height="20" forecolor="#7715EE"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{mrp_production_pz_busta_collo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="401" y="148" width="54" height="20" forecolor="#7715EE"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tasselli]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="454" y="148" width="18" height="20" forecolor="#7715EE"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{mrp_production_tasselli}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="532" y="148" width="64" height="20" forecolor="#7715EE"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Battute]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="596" y="148" width="23" height="20" forecolor="#7715EE"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{mrp_production_battute}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="148" width="88" height="20" forecolor="#7715EE"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo Scatola]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="88" y="148" width="47" height="20" forecolor="#7715EE"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_tipo_scatola}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="83" y="128" width="372" height="20" forecolor="#F90101"/>
+				<textElement textAlignment="Left">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{marchio_marchio_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="19" width="83" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Produzione n.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="83" y="19" width="116" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="39" width="83" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Linea]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="83" y="39" width="116" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_routing_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="215" y="19" width="146" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data di inizio produzione ]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="361" y="19" width="94" height="15" forecolor="#F90101"/>
+				<textElement textAlignment="Left">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{mrp_production_date_start}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="74" width="394" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Articolo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="133" width="88" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Marchio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="725" y="75" width="77" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantità]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="59" width="83" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ordine]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="83" y="59" width="116" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{mrp_production_origin}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="215" y="39" width="146" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="361" y="39" width="421" height="15"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="0" width="219" height="20"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MAINETTI OMAF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="168" width="34" height="15" forecolor="#F86007"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Note]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="271" y="149" width="82" height="20" forecolor="#7715EE"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nr. Scatole]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="352" y="149" width="24" height="20" forecolor="#7715EE">
+					<printWhenExpression><![CDATA[$F{mrp_production_pz_busta_collo} > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{mrp_production_product_qty}/$F{mrp_production_pz_busta_collo}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -253,10 +357,10 @@ WHERE
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="314" splitType="Stretch">
-			<image>
-				<reportElement x="64" y="0" width="738" height="314"/>
-				<imageExpression class="java.lang.String"><![CDATA["./griglia.jpg"]]></imageExpression>
+		<band height="353" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="0" width="802" height="353"/>
+				<imageExpression class="java.lang.String"><![CDATA["./schema.jpg"]]></imageExpression>
 			</image>
 		</band>
 	</pageFooter>

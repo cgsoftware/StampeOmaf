@@ -44,6 +44,17 @@
         <field name="jasper_report">True</field>
         <field name="jasper_output">pdf</field>	
 	</record>
+
+	<record id="report_ddtn" model="ir.actions.report.xml">
+		<field name="name">DDTN</field>
+		<field name="type">ir.actions.report.xml</field>
+		<field name="model">italianfiscaldoc.header</field>
+		<field name="report_name">ddtn</field>
+		<field name="report_rml">StampeOmaf/report/ddtn.jrxml</field>
+		<field name="report_type">pdf</field>
+        <field name="jasper_report">True</field>
+        <field name="jasper_output">pdf</field>	
+	</record>
 	
 	<record id="report_fatacc" model="ir.actions.report.xml">
 		<field name="name">Fattura Accompagnatoria</field>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DDT" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.357947691000002"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="472"/>
 	<style name="Righe" mode="Opaque">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
@@ -24,10 +24,13 @@
 		<defaultValueExpression><![CDATA["./"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="name" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$F{fiscaldoc_header_name}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="scad_1" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["./"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="agente" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -108,7 +111,6 @@
      fiscaldoc_causalidoc."descrizione" AS fiscaldoc_causalidoc_descrizione,
      res_users."name" AS res_users_name,
      account_payment_term."name" AS account_payment_term_name,
-     res_bank."name" AS res_bank_name,
      sale_shop."name" AS sale_shop_name,
      res_partner_address_A."zip" AS res_partner_address_A_zip,
      res_partner_address_A."city" AS res_partner_address_A_city,
@@ -119,7 +121,18 @@
      res_partner_address."phone" AS res_partner_address_phone,
      fiscaldoc_righe."id" AS fiscaldoc_righe_id,
      res_province."name" AS res_province_name,
-     res_province."code" AS res_province_code
+     res_province."code" AS res_province_code,
+     res_partner."dati" AS res_partner_dati,
+     res_partner."esenzione" AS res_partner_esenzione,
+     res_partner."scad_esenzione" AS res_partner_scad_esenzione,
+     res_partner."dati_es_iva" AS res_partner_dati_es_iva,
+     res_partner."cod_esenzione_iva" AS res_partner_cod_esenzione_iva,
+     res_partner."scad_esenzione_iva" AS res_partner_scad_esenzione_iva,
+     stock_location."name" AS stock_location_name,
+     res_partner."ref" AS res_partner_ref,
+     res_bank."name" AS res_bank_name,
+     res_partner."fiscalcode" AS res_partner_fiscalcode,
+     res_partner."agent_id" AS res_partner_agent_id
 FROM
      "public"."fiscaldoc_header" fiscaldoc_header INNER JOIN "public"."fiscaldoc_righe" fiscaldoc_righe ON fiscaldoc_header."id" = fiscaldoc_righe."name"
      LEFT OUTER JOIN "public"."fiscaldoc_spedizioni" fiscaldoc_spedizioni ON fiscaldoc_header."spedizione" = fiscaldoc_spedizioni."id"
@@ -134,6 +147,7 @@ FROM
      LEFT OUTER JOIN "public"."sale_shop" sale_shop ON fiscaldoc_header."magazzino_id" = sale_shop."id"
      LEFT OUTER JOIN "public"."res_partner_address" res_partner_address ON fiscaldoc_header."partner_indfat_id" = res_partner_address."id"
      LEFT OUTER JOIN "public"."res_partner_address" res_partner_address_A ON fiscaldoc_header."partner_indcons_id" = res_partner_address_A."id"
+     LEFT OUTER JOIN "public"."stock_location" stock_location ON fiscaldoc_header."magazzino_id" = stock_location."id"
      LEFT OUTER JOIN "public"."res_province" res_province ON res_partner_address."province" = res_province."id"
      LEFT OUTER JOIN "public"."sale_agent" sale_agent ON res_partner."agent_id" = sale_agent."id"
      LEFT OUTER JOIN "public"."product_uom" product_uom ON fiscaldoc_righe."product_uom" = product_uom."id"
@@ -143,8 +157,7 @@ FROM
 WHERE
      fiscaldoc_header."name" >= $P{danr}
  AND fiscaldoc_header."name" <= $P{anr}
- AND fiscaldoc_header."data_documento" >= to_date($P{dadata},'YYYY-MM-DD')
- AND fiscaldoc_header."data_documento" <= to_date($P{dadata},'YYYY-MM-DD')
+ AND (res_partner."agent_id" = $P{agente} OR $P{agente}=0)
 ORDER BY
      fiscaldoc_righe_id ASC]]>
 	</queryString>
@@ -225,7 +238,6 @@ ORDER BY
 	<field name="fiscaldoc_causalidoc_descrizione" class="java.lang.String"/>
 	<field name="res_users_name" class="java.lang.String"/>
 	<field name="account_payment_term_name" class="java.lang.String"/>
-	<field name="res_bank_name" class="java.lang.String"/>
 	<field name="sale_shop_name" class="java.lang.String"/>
 	<field name="res_partner_address_a_zip" class="java.lang.String"/>
 	<field name="res_partner_address_a_city" class="java.lang.String"/>
@@ -237,12 +249,33 @@ ORDER BY
 	<field name="fiscaldoc_righe_id" class="java.lang.Integer"/>
 	<field name="res_province_name" class="java.lang.String"/>
 	<field name="res_province_code" class="java.lang.String"/>
+	<field name="res_partner_dati" class="java.lang.String"/>
+	<field name="res_partner_esenzione" class="java.lang.Integer"/>
+	<field name="res_partner_scad_esenzione" class="java.sql.Date"/>
+	<field name="res_partner_dati_es_iva" class="java.lang.String"/>
+	<field name="res_partner_cod_esenzione_iva" class="java.lang.Integer"/>
+	<field name="res_partner_scad_esenzione_iva" class="java.sql.Date"/>
+	<field name="stock_location_name" class="java.lang.String"/>
+	<field name="res_partner_ref" class="java.lang.String"/>
+	<field name="res_bank_name" class="java.lang.String"/>
+	<field name="res_partner_fiscalcode" class="java.lang.String"/>
 	<sortField name="fiscaldoc_header_numdoc"/>
 	<variable name="variable1" class="java.lang.String">
 		<variableExpression><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></variableExpression>
 	</variable>
+	<variable name="Spazio" class="java.lang.String">
+		<variableExpression><![CDATA[' ']]></variableExpression>
+		<initialValueExpression><![CDATA[' ']]></initialValueExpression>
+	</variable>
+	<variable name="tmerce" class="java.math.BigDecimal" resetType="Group" resetGroup="FAT" calculation="Sum">
+		<variableExpression><![CDATA[$F{fiscaldoc_righe_totale_riga}]]></variableExpression>
+	</variable>
+	<variable name="controllo" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{fiscaldoc_header_totale_merce}-$V{tmerce}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
 	<group name="FAT" isStartNewPage="true" isResetPageNumber="true">
-		<groupExpression><![CDATA[$F{fiscaldoc_header_name}+$F{fiscaldoc_header_data_documento}]]></groupExpression>
+		<groupExpression><![CDATA[$F{fiscaldoc_header_partner_id}]]></groupExpression>
 		<groupHeader>
 			<band/>
 		</groupHeader>
@@ -254,316 +287,305 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="185" splitType="Stretch">
+		<band height="213" splitType="Stretch">
 			<rectangle radius="10">
-				<reportElement x="274" y="85" width="276" height="63" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement x="274" y="115" width="276" height="63" forecolor="#000000" backcolor="#FFFFFF"/>
 			</rectangle>
 			<textField isBlankWhenNull="true">
-				<reportElement x="283" y="127" width="38" height="11"/>
+				<reportElement x="283" y="157" width="260" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_zip}+$V{Spazio}+$F{res_partner_address_city}+$V{Spazio}+$F{res_province_code}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="345" y="137" width="135" height="11"/>
+				<reportElement x="345" y="167" width="135" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_mobile}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="280" y="95" width="245" height="12"/>
+				<reportElement x="280" y="125" width="245" height="12"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="284" y="137" width="61" height="11"/>
+				<reportElement x="284" y="167" width="61" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_phone}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="286" y="87" width="185" height="9"/>
+				<reportElement x="286" y="117" width="185" height="9"/>
 				<textElement>
 					<font size="5" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Intestatario Documento]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="323" y="127" width="193" height="11"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_city}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="283" y="117" width="261" height="11"/>
+				<reportElement x="283" y="147" width="261" height="11"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_address_street}]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="356" y="10" width="199" height="56"/>
-				<imageExpression class="java.lang.String"><![CDATA["./logoomaf2.gif"]]></imageExpression>
-			</image>
-			<image>
-				<reportElement x="5" y="5" width="136" height="175"/>
+				<reportElement x="5" y="5" width="254" height="173"/>
 				<imageExpression class="java.lang.String"><![CDATA["./logoomaf1.gif"]]></imageExpression>
 			</image>
-			<textField isBlankWhenNull="true">
-				<reportElement x="514" y="128" width="25" height="11"/>
-				<textElement>
-					<font size="8"/>
+			<rectangle radius="10">
+				<reportElement x="3" y="187" width="269" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+			</rectangle>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="6" y="187" width="258" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_province_code}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="78" splitType="Stretch">
+		<band height="103" splitType="Stretch">
 			<rectangle radius="10">
-				<reportElement x="0" y="0" width="550" height="60"/>
+				<reportElement x="3" y="1" width="550" height="80"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="359" y="3" width="87" height="8"/>
+				<reportElement x="325" y="4" width="87" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[NUMERO DOCUMENTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="10" y="3" width="30" height="8"/>
+				<reportElement x="13" y="4" width="30" height="8"/>
 				<textElement>
 					<font size="5" isBold="false" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[COD. CLI.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="50" y="3" width="45" height="8"/>
+				<reportElement x="53" y="4" width="45" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[PARTITA IVA CLI.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="268" y="3" width="82" height="8"/>
-				<textElement>
-					<font size="5" isBold="false" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[TIPO DOCUMENTO	]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="490" y="3" width="50" height="8"/>
+				<reportElement x="493" y="4" width="50" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[DATA DOCUM.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="509" y="34" width="35" height="8"/>
+				<reportElement x="512" y="59" width="35" height="8"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Pagina]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="509" y="45" width="35" height="10"/>
+				<reportElement x="512" y="70" width="35" height="10"/>
 				<textElement textAlignment="Center">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="10" y="10" width="30" height="10"/>
+				<reportElement x="6" y="11" width="40" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{fiscaldoc_header_partner_id}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_ref}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="490" y="10" width="50" height="10"/>
+				<reportElement x="493" y="11" width="50" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{fiscaldoc_header_data_documento}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="266" y="10" width="84" height="20"/>
-				<textElement>
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_causalidoc_descrizione}]]></textFieldExpression>
-			</textField>
 			<textField>
-				<reportElement x="359" y="10" width="121" height="10"/>
+				<reportElement x="325" y="11" width="177" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_header_name}]]></textFieldExpression>
 			</textField>
 			<rectangle radius="8">
-				<reportElement x="2" y="62" width="546" height="15" backcolor="#B7B7B7"/>
+				<reportElement x="3" y="84" width="548" height="15" backcolor="#B7B7B7"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="315" y="66" width="55" height="8"/>
+				<reportElement x="318" y="88" width="55" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Quantità]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="285" y="66" width="24" height="8"/>
+				<reportElement x="315" y="88" width="24" height="8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[UM]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="509" y="66" width="34" height="8"/>
+				<reportElement x="512" y="88" width="34" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Cod. IVA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="5" y="66" width="210" height="8"/>
+				<reportElement x="86" y="88" width="132" height="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[Codice / Articolo	]]></text>
+				<text><![CDATA[  Articolo	]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="30" width="550" height="1"/>
+				<reportElement x="3" y="31" width="550" height="1"/>
 			</line>
 			<line>
-				<reportElement x="45" y="0" width="1" height="30"/>
+				<reportElement x="48" y="1" width="1" height="30"/>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="50" y="10" width="70" height="10"/>
+				<reportElement x="53" y="11" width="70" height="10"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_vat}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="120" y="0" width="1" height="30"/>
+				<reportElement x="123" y="1" width="1" height="30"/>
 			</line>
 			<staticText>
-				<reportElement x="124" y="3" width="68" height="8"/>
+				<reportElement x="127" y="4" width="68" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[CODICE FISCALE CLIENTE]]></text>
 			</staticText>
 			<line>
-				<reportElement x="195" y="0" width="1" height="30"/>
+				<reportElement x="277" y="1" width="1" height="30"/>
 			</line>
 			<staticText>
-				<reportElement x="200" y="3" width="50" height="8"/>
+				<reportElement x="9" y="34" width="41" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[AGENTE]]></text>
 			</staticText>
 			<line>
-				<reportElement x="260" y="0" width="1" height="30"/>
+				<reportElement x="488" y="1" width="1" height="30"/>
 			</line>
 			<line>
-				<reportElement x="485" y="0" width="1" height="30"/>
-			</line>
-			<line>
-				<reportElement x="350" y="0" width="1" height="30"/>
-			</line>
-			<line>
-				<reportElement x="150" y="30" width="1" height="30"/>
+				<reportElement x="172" y="52" width="1" height="30"/>
 			</line>
 			<staticText>
-				<reportElement x="8" y="34" width="129" height="8"/>
+				<reportElement x="5" y="59" width="143" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[DESCRIZIONE PAGAMENTO]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="8" y="40" width="129" height="10"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5" y="65" width="165" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{account_payment_term_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="160" y="34" width="129" height="8"/>
+				<reportElement x="175" y="59" width="144" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[BANCA D'APPOGGIO]]></text>
 			</staticText>
 			<line>
-				<reportElement x="295" y="30" width="1" height="30"/>
+				<reportElement x="458" y="52" width="1" height="29"/>
 			</line>
 			<staticText>
-				<reportElement x="314" y="34" width="129" height="8"/>
+				<reportElement x="470" y="59" width="33" height="8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isItalic="false"/>
 				</textElement>
 				<text><![CDATA[DEPOSITO]]></text>
 			</staticText>
 			<line>
-				<reportElement x="485" y="30" width="1" height="30"/>
+				<reportElement x="508" y="52" width="1" height="30"/>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="160" y="40" width="129" height="10"/>
+				<reportElement x="177" y="65" width="282" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_bank_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="314" y="40" width="129" height="10"/>
+				<reportElement x="472" y="65" width="33" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{sale_shop_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{stock_location_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="370" y="66" width="55" height="8"/>
+				<reportElement x="373" y="88" width="55" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Prezzo Unitario	]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="431" y="66" width="27" height="8"/>
+				<reportElement x="434" y="88" width="27" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Sconto]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="459" y="66" width="50" height="8"/>
+				<reportElement x="462" y="88" width="50" height="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Importo Rigo]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="198" y="10" width="52" height="10"/>
+				<reportElement x="43" y="34" width="508" height="10"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sale_agent_name}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="3" y="51" width="550" height="1"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="12" width="151" height="10"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_fiscalcode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="88" width="132" height="8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Codice]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="10" splitType="Stretch">
 			<frame>
-				<reportElement style="Righe" mode="Opaque" x="5" y="0" width="547" height="10"/>
+				<reportElement style="Righe" mode="Opaque" x="1" y="0" width="552" height="10"/>
 				<textField isBlankWhenNull="true">
 					<reportElement x="509" y="0" width="25" height="10">
 						<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
@@ -574,7 +596,7 @@ ORDER BY
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{account_tax_description}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="280" y="0" width="24" height="10">
+					<reportElement x="315" y="0" width="24" height="10">
 						<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
 					</reportElement>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -601,14 +623,14 @@ ORDER BY
 					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_righe_totale_riga}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true">
-					<reportElement x="0" y="0" width="280" height="10"/>
+					<reportElement x="75" y="0" width="235" height="10"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{fiscaldoc_righe_descrizione_riga}]]></textFieldExpression>
 				</textField>
 			</frame>
-			<textField pattern="¤ #,##0.00">
+			<textField pattern="¤ #,##0.00000">
 				<reportElement x="370" y="0" width="50" height="10">
 					<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
 				</reportElement>
@@ -626,126 +648,157 @@ ORDER BY
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_righe_product_uom_qty}]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement x="2" y="0" width="80" height="10">
+					<printWhenExpression><![CDATA[$F{fiscaldoc_righe_product_prezzo_unitario} > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product_product_default_code}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="187" splitType="Stretch">
-			<rectangle radius="10">
-				<reportElement x="0" y="0" width="555" height="186" printWhenGroupChanges="FAT" forecolor="#131313"/>
-			</rectangle>
-			<line>
-				<reportElement x="0" y="27" width="553" height="1" printWhenGroupChanges="FAT"/>
-			</line>
-			<line>
-				<reportElement mode="Transparent" x="0" y="105" width="555" height="1" printWhenGroupChanges="FAT"/>
-			</line>
-			<line>
-				<reportElement x="0" y="133" width="555" height="1"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="63" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="7" y="5" width="50" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOTALE MERCE]]></text>
-			</staticText>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="7" y="13" width="50" height="10"/>
-				<textElement>
+		<band height="192">
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="95" y="13" width="28" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{fiscaldoc_header_sconto_partner}!=0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_netto_merce}]]></textFieldExpression>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_sconto_partner}]]></textFieldExpression>
+			</textField>
+			<rectangle radius="10">
+				<reportElement x="0" y="0" width="554" height="186" isPrintWhenDetailOverflows="true" forecolor="#131313"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="508" y="159" width="34" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="6" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Scadenza]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="125" y="0" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="156" y="106" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="7" y="13" width="49" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_totale_merce}>0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_merce}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="70" y="5" width="50" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="9" y="138" width="33" height="8" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[% SC. CASSA]]></text>
+				<text><![CDATA[SCADENZE ]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="70" y="13" width="50" height="10"/>
+			<staticText>
+				<reportElement x="213" y="74" width="53" height="8" isPrintWhenDetailOverflows="true"/>
 				<textElement>
+					<font size="6" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TOTALI CONAI]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Transparent" x="0" y="105" width="554" height="1" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="65" y="13" width="27" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_sconto_pagamento}>0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_sconto_pagamento}]]></textFieldExpression>
 			</textField>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="125" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="132" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="411" y="118" width="44" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_totale_acconti}>0]]></printWhenExpression>
+				</reportElement>
 				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
+					<font size="8"/>
 				</textElement>
-				<text><![CDATA[TOTALE NETTO MERCE]]></text>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_acconti}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="510" y="137" width="34" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="6" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Scadenza]]></text>
 			</staticText>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="465" y="106" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="132" y="13" width="70" height="10"/>
-				<textElement>
+				<reportElement x="132" y="13" width="69" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_imponibile}]]></textFieldExpression>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_netto_merce}]]></textFieldExpression>
 			</textField>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="205" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="211" y="13" width="100" height="10"/>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="509" y="147" width="39" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
 				<textElement>
-					<font size="8"/>
+					<font size="6" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_trasporto}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{res_partner_scad_esenzione_iva}]]></textFieldExpression>
 			</textField>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="320" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
 			<staticText>
-				<reportElement x="215" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="345" y="110" width="44" height="8" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[TRASPORTO]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="330" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[IMBALLO]]></text>
+				<text><![CDATA[ABBUONO]]></text>
 			</staticText>
 			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="430" y="0" width="1" height="27" printWhenGroupChanges="FAT"/>
+				<reportElement mode="Transparent" x="335" y="106" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<line>
+				<reportElement x="0" y="133" width="554" height="1" isPrintWhenDetailOverflows="true"/>
 			</line>
 			<staticText>
-				<reportElement x="446" y="5" width="70" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="90" y="110" width="62" height="8" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[SPESE BANCARIE]]></text>
+				<text><![CDATA[TOTALE IVA]]></text>
 			</staticText>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="210" y="132" width="1" height="54" isPrintWhenDetailOverflows="true"/>
+			</line>
 			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="330" y="13" width="95" height="10"/>
+				<reportElement x="215" y="118" width="44" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_totale_bolli}>0]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_imballo}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="446" y="13" width="100" height="10"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_incasso}]]></textFieldExpression>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_bolli}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="2" y="30" width="203" height="74"/>
+				<reportElement x="4" y="32" width="202" height="74" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font size="4"/>
 				</textElement>
@@ -757,142 +810,95 @@ LEGGE 675/96 E D.L. 196/2003: TUTELA DELLA PRIVACY - Vi informiamo che i Vs. dat
 CONTRIBUTO CONAI ASSOLTO OVE DOVUTO
 MERCE DI ORIGINE PREFERENZIALE ITALIANA/CEE]]></text>
 			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="210" y="28" width="1" height="77" printWhenGroupChanges="FAT"/>
-			</line>
-			<staticText>
-				<reportElement x="7" y="110" width="63" height="8" printWhenGroupChanges="FAT"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="217" y="167" width="290" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
 				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
+					<font size="6" isBold="true"/>
 				</textElement>
-				<text><![CDATA[TOTALE IMPONIBILE]]></text>
-			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="85" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="7" y="118" width="63" height="10"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_imponibile}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="90" y="110" width="63" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOTALE IVA]]></text>
-			</staticText>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="90" y="118" width="63" height="10"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_imposta}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_dati}]]></textFieldExpression>
 			</textField>
 			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="156" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
+				<reportElement mode="Transparent" x="85" y="106" width="1" height="27" isPrintWhenDetailOverflows="true"/>
 			</line>
-			<staticText>
-				<reportElement x="160" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
+			<subreport>
+				<reportElement x="41" y="134" width="219" height="52" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="name">
+					<subreportParameterExpression><![CDATA[$F{fiscaldoc_header_name}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="danr">
+					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="adata">
+					<subreportParameterExpression><![CDATA[$P{adata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scad_1">
+					<subreportParameterExpression><![CDATA[$P{scad_1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dadata">
+					<subreportParameterExpression><![CDATA[$P{dadata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anr">
+					<subreportParameterExpression><![CDATA[$P{anr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "scadq.jasper"]]></subreportExpression>
+			</subreport>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="210" y="106" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="509" y="167" width="39" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
 				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{res_partner_scad_esenzione}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="132" y="5" width="69" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right">
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[SPESE ART. 15]]></text>
+				<text><![CDATA[TOTALE NETTO MERCE]]></text>
 			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="210" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="265" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
 			<staticText>
-				<reportElement x="215" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="215" y="110" width="44" height="8" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[SPESE BOLLI]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="272" y="110" width="55" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="7" y="110" width="62" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TOTALE IMPONIBILE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="272" y="110" width="54" height="8" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[TOTALE FATTURA]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="345" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[ABBUONO]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="411" y="110" width="45" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[ANTICIPO]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="490" y="110" width="60" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[TOT. DA PAGARE]]></text>
-			</staticText>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="335" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="395" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<line direction="BottomUp">
-				<reportElement mode="Transparent" x="465" y="106" width="1" height="27" printWhenGroupChanges="FAT"/>
-			</line>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="215" y="118" width="45" height="10"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_bolli}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="265" y="118" width="62" height="16"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_documento}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="411" y="118" width="45" height="10"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_acconti}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="471" y="118" width="79" height="15"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_documento}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="9" y="138" width="103" height="8" printWhenGroupChanges="FAT"/>
-				<textElement>
-					<font size="5" isBold="true" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[SCADENZE EFFETTI]]></text>
-			</staticText>
 			<subreport runToBottom="false">
-				<reportElement x="267" y="31" width="277" height="70"/>
+				<reportElement x="267" y="31" width="276" height="70" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="name">
-					<subreportParameterExpression><![CDATA[$P{name}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{fiscaldoc_header_name}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="danr">
 					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
@@ -909,39 +915,107 @@ MERCE DI ORIGINE PREFERENZIALE ITALIANA/CEE]]></text>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "iva.jasper"]]></subreportExpression>
 			</subreport>
-			<subreport>
-				<reportElement x="117" y="134" width="220" height="52"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="name">
-					<subreportParameterExpression><![CDATA[$P{name}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="danr">
-					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="scad_1">
-					<subreportParameterExpression><![CDATA[$P{scad_1}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="adata">
-					<subreportParameterExpression><![CDATA[$P{adata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="dadata">
-					<subreportParameterExpression><![CDATA[$P{dadata}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="anr">
-					<subreportParameterExpression><![CDATA[$P{anr}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "scadq.jasper"]]></subreportExpression>
-			</subreport>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="265" y="118" width="67" height="16" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_documento}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="430" y="0" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<staticText>
+				<reportElement x="215" y="5" width="69" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right">
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TRASPORTO]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="218" y="147" width="289" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{res_partner_dati_es_iva}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="446" y="5" width="69" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right">
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[SPESE BANCARIE]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="205" y="0" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="63" y="0" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="395" y="106" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<staticText>
+				<reportElement x="330" y="5" width="69" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right">
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[IMBALLO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="27" width="552" height="1" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<staticText>
+				<reportElement x="7" y="5" width="49" height="8" isPrintWhenDetailOverflows="true" printWhenGroupChanges="FAT"/>
+				<textElement textAlignment="Right">
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TOTALE MERCE]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="265" y="106" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="446" y="13" width="67" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_spese_incasso}>0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_incasso}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="210" y="28" width="1" height="77" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="471" y="118" width="78" height="15" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_documento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="490" y="110" width="59" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[TOT. DA PAGARE]]></text>
+			</staticText>
 			<subreport runToBottom="false">
-				<reportElement x="270" y="74" width="210" height="40"/>
+				<reportElement x="270" y="74" width="209" height="40" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="name">
-					<subreportParameterExpression><![CDATA[$P{name}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{fiscaldoc_header_name}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="danr">
 					<subreportParameterExpression><![CDATA[$P{danr}]]></subreportParameterExpression>
@@ -959,18 +1033,107 @@ MERCE DI ORIGINE PREFERENZIALE ITALIANA/CEE]]></text>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "conai.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement x="213" y="74" width="54" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="218" y="139" width="67" height="8" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
 				<textElement>
-					<font size="6" isBold="true" isItalic="true"/>
+					<font size="5" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[TOTALI CONAI]]></text>
+				<text><![CDATA[DATI ESENZIONE IVA]]></text>
 			</staticText>
+			<line direction="BottomUp">
+				<reportElement mode="Transparent" x="320" y="0" width="1" height="27" isPrintWhenDetailOverflows="true"/>
+			</line>
 			<staticText>
-				<reportElement x="214" y="34" width="45" height="8" printWhenGroupChanges="FAT"/>
+				<reportElement x="411" y="110" width="44" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[ANTICIPO]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="90" y="118" width="62" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_imposta}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="214" y="34" width="44" height="8" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font size="6" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[TOTALI IVA]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="330" y="13" width="69" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_spese_imballo}>0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_imballo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="215" y="13" width="70" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_spese_trasporto}>0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_spese_trasporto}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="217" y="159" width="67" height="8" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$F{res_partner_dati_es_iva}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[DATI ESENZIONE CONAI]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="7" y="118" width="62" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_totale_imponibile}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="70" y="5" width="52" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center">
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[SCONTI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="160" y="110" width="44" height="8" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="5" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[SPESE ART. 15]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="92" y="13" width="29" height="10" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA[$V{controllo}<1 & $F{fiscaldoc_header_sconto_partner}!=0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fiscaldoc_header_sconto_partner}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="491" y="88" width="60" height="14">
+					<printWhenExpression><![CDATA[$V{controllo}>=1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[SEGUE -->]]></text>
 			</staticText>
 		</band>
 	</pageFooter>

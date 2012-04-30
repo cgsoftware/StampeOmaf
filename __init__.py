@@ -23,6 +23,5 @@
 #import sale
 #import product
 import wizard
-import purchase
 
 
